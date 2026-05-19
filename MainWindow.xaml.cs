@@ -96,11 +96,16 @@ namespace RimWorldModManager
             await _viewModel.RefreshModsAsync();
         }
 
-        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        private async void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
             var settingsWindow = new SettingsWindow();
             settingsWindow.Owner = this;
             settingsWindow.ShowDialog();
+
+            if (settingsWindow.PathsChanged)
+            {
+                await _viewModel.RefreshModsAsync();
+            }
         }
 
         private void ModsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -4,17 +4,11 @@
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-                 xmlns:local="clr-namespace:RimWorldModManager"
                  mc:Ignorable="d"
-                 Title="设置" Height="400" Width="550"
+                 Title="设置" Height="300" Width="550"
                  WindowStartupLocation="CenterOwner">
-    <ui:FluentWindow.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <local:InvertBooleanToVisibilityConverter x:Key="InvertBooleanToVisibilityConverter" />
-    </ui:FluentWindow.Resources>
     <Grid Margin="16">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -30,7 +24,6 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <ui:TextBox Grid.Column="0" 
                             Text="{Binding SteamCmdPath}" 
@@ -38,17 +31,8 @@
                             Margin="0,0,8,0" />
                 <ui:Button Grid.Column="1" 
                            Content="浏览..." 
-                           Click="BrowseSteamCmd_Click"
-                           Margin="0,0,8,0" />
-                <ui:Button Grid.Column="2" 
-                           Content="检测" 
-                           Click="TestSteamCmd_Click" />
+                           Click="BrowseSteamCmd_Click" />
             </Grid>
-            <StackPanel Orientation="Horizontal" Margin="0,8,0,0" Visibility="{Binding IsCheckingSteamCmd, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <ui:ProgressRing Width="16" Height="16" Margin="0,0,8,0" />
-                <TextBlock Text="{Binding SteamCmdStatus}" />
-            </StackPanel>
-            <TextBlock Text="{Binding SteamCmdStatus}" Visibility="{Binding IsCheckingSteamCmd, Converter={StaticResource InvertBooleanToVisibilityConverter}}" Margin="0,8,0,0" />
         </StackPanel>
 
         <StackPanel Grid.Row="2" Margin="0,16,0,0">
@@ -68,7 +52,7 @@
             </Grid>
         </StackPanel>
 
-        <Grid Grid.Row="5" Margin="0,16,0,0">
+        <Grid Grid.Row="4" Margin="0,16,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
