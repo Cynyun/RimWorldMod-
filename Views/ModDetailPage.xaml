@@ -3,10 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:converters="clr-namespace:RimWorldModManager.Converters"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="300">
-    <Grid Background="{DynamicResource CardBackgroundFillColor}">
+    <UserControl.Resources>
+        <converters:NullImageConverter x:Key="NullImageConverter" />
+    </UserControl.Resources>
+    <Grid Background="White">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -19,12 +22,15 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="16,16,16,0">
-            <ui:Button 
+            <Button 
                 Click="BackButton_Click"
                 Width="40" Height="40"
-                Style="{StaticResource NavigationBackButton}">
-                <ui:SymbolIcon Symbol="ArrowLeft" />
-            </ui:Button>
+                Background="Transparent"
+                BorderThickness="0"
+                ToolTip="返回">
+                <Path Data="M 0 10 L 15 0 L 15 5 L 30 5 L 30 25 L 15 25 L 15 30 Z" 
+                      Fill="Black" Width="30" Height="40" Stretch="Uniform"/>
+            </Button>
             <TextBlock 
                 Text="Mod 详情" 
                 FontSize="18" 
@@ -33,54 +39,46 @@
                 Margin="8,0,0,0" />
         </StackPanel>
 
-        <Border Grid.Row="1" Margin="16,16,16,0" BorderThickness="1" BorderBrush="{DynamicResource BorderColor}">
+        <Border Grid.Row="1" Margin="16,16,16,0" BorderThickness="1" BorderBrush="#DDDDDD">
             <Image 
                 Width="260" 
                 Height="180" 
-                Stretch="UniformToFill"
-                Source="{Binding Mod.PreviewImagePath, FallbackValue='pack://application:,,,/Resources/default-mod.png'}">
-                <Image.Style>
-                    <Style TargetType="Image">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Mod.PreviewImagePath}" Value="{x:Null}">
-                                <Setter Property="Source" Value="pack://application:,,,/Resources/default-mod.png" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding Mod.PreviewImagePath}" Value="">
-                                <Setter Property="Source" Value="pack://application:,,,/Resources/default-mod.png" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Image.Style>
+                Stretch="UniformToFill">
+                <Image.Source>
+                    <MultiBinding Converter="{StaticResource NullImageConverter}">
+                        <Binding Path="Mod.PreviewImagePath" />
+                    </MultiBinding>
+                </Image.Source>
             </Image>
         </Border>
 
         <StackPanel Grid.Row="2" Margin="16,16,16,0">
-            <TextBlock Text="Mod 名称" FontSize="12" Foreground="{DynamicResource TextSecondaryColor}" />
+            <TextBlock Text="Mod 名称" FontSize="12" Foreground="#666666" />
             <TextBlock Text="{Binding Mod.Name}" FontSize="16" FontWeight="Bold" Margin="0,4,0,0" />
         </StackPanel>
 
         <StackPanel Grid.Row="3" Margin="16,8,16,0">
-            <TextBlock Text="作者" FontSize="12" Foreground="{DynamicResource TextSecondaryColor}" />
+            <TextBlock Text="作者" FontSize="12" Foreground="#666666" />
             <TextBlock Text="{Binding AuthorDisplay}" FontSize="14" Margin="0,4,0,0" />
         </StackPanel>
 
         <StackPanel Grid.Row="4" Margin="16,8,16,0">
-            <TextBlock Text="版本" FontSize="12" Foreground="{DynamicResource TextSecondaryColor}" />
+            <TextBlock Text="版本" FontSize="12" Foreground="#666666" />
             <TextBlock Text="{Binding VersionDisplay}" FontSize="14" Margin="0,4,0,0" />
         </StackPanel>
 
         <StackPanel Grid.Row="5" Margin="16,8,16,0">
-            <TextBlock Text="最后更新" FontSize="12" Foreground="{DynamicResource TextSecondaryColor}" />
+            <TextBlock Text="最后更新" FontSize="12" Foreground="#666666" />
             <TextBlock Text="{Binding LastUpdatedDisplay}" FontSize="14" Margin="0,4,0,0" />
         </StackPanel>
 
         <StackPanel Grid.Row="6" Margin="16,8,16,0">
-            <TextBlock Text="标签" FontSize="12" Foreground="{DynamicResource TextSecondaryColor}" />
+            <TextBlock Text="标签" FontSize="12" Foreground="#666666" />
             <TextBlock Text="{Binding TagsDisplay}" FontSize="12" Margin="0,4,0,0" TextWrapping="Wrap" />
         </StackPanel>
 
         <StackPanel Grid.Row="7" Margin="16,16,16,16">
-            <TextBlock Text="描述" FontSize="12" Foreground="{DynamicResource TextSecondaryColor}" />
+            <TextBlock Text="描述" FontSize="12" Foreground="#666666" />
             <TextBlock Text="{Binding DescriptionDisplay}" FontSize="12" Margin="0,4,0,0" TextWrapping="Wrap" />
         </StackPanel>
     </Grid>

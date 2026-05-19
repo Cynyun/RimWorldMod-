@@ -28,7 +28,7 @@
                 <ColumnDefinition Width="320" />
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0" Background="{DynamicResource CardBackgroundFillColor}" CornerRadius="8">
+            <Border Grid.Column="0" Background="#F5F5F5" CornerRadius="8">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -88,7 +88,7 @@
                     </Grid>
 
                     <Grid Grid.Row="1" Margin="12">
-                        <ui:DataGrid x:Name="ModsDataGrid"
+                        <DataGrid x:Name="ModsDataGrid"
                                      ItemsSource="{Binding Mods}"
                                      SelectedItem="{Binding SelectedMod}"
                                      AutoGenerateColumns="False"
@@ -108,17 +108,17 @@
                                 <DataGridTemplateColumn Header="启用">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <ui:ToggleSwitch IsChecked="{Binding IsEnabled}" />
+                                            <ToggleButton IsChecked="{Binding IsEnabled}" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                             </DataGrid.Columns>
-                        </ui:DataGrid>
+                        </DataGrid>
                     </Grid>
                 </Grid>
             </Border>
 
-            <Border Grid.Column="1" Background="{DynamicResource CardBackgroundFillColor}" CornerRadius="8" Margin="16,0,0,0">
+            <Border Grid.Column="1" Background="#F5F5F5" CornerRadius="8" Margin="16,0,0,0">
                 <Grid>
                     <Grid.Style>
                         <Style TargetType="Grid">
@@ -140,7 +140,7 @@
                         HorizontalAlignment="Center" 
                         VerticalAlignment="Center"
                         Visibility="{Binding HasSelectedMod, Converter={StaticResource InvertBooleanToVisibilityConverter}}"
-                        Foreground="{DynamicResource TextSecondaryColor}" />
+                        Foreground="#666666" />
                 </Grid>
             </Border>
         </Grid>
@@ -149,6 +149,6 @@
                    Text="{Binding StatusMessage}" 
                    Margin="16,8,0,8" 
                    FontSize="12"
-                   Foreground="{DynamicResource TextSecondaryColor}" />
+                   Foreground="#666666" />
     </Grid>
 </ui:FluentWindow>
