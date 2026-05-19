@@ -1,0 +1,80 @@
+# Build results
+[Dd]ebug/
+[Rr]elease/
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific files
+*.userprefs
+
+# Mono auto generated files
+mono_crash.*
+
+# Build results of an ATL Project
+*.log
+*.idb
+*.ipch
+*.aps
+*.ncb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+
+# Build results of an F# project
+*.fsi
+*.ml
+*.mli
+
+# Build results of C# projects
+*.dll
+*.exe
+*.pdb
+*.xml
+
+# Visual Studio Code
+.vscode/
+
+# Rider
+.idea/
+*.sln.iml
+
+# Mac OS
+.DS_Store
+
+# SteamCMD (keep but don't commit)
+steamcmd/
+!steamcmd/.gitkeep
+
+# Config (keep but don't commit user settings)
+config/
+!config/.gitkeep
+
+# Mods (downloaded mods)
+mods/
+!mods/.gitkeep
+
+# Package directories
+packages/
+
+# NuGet Packages
+*.nupkg
+!**/build/*.nupkg
+
+# Windows
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.cache
+
+# Environment variables
+*.env
+*.env.local

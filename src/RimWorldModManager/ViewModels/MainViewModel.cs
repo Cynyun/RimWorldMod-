@@ -1,0 +1,150 @@
+using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using RimWorldModManager.Config;
+using RimWorldModManager.Models;
+using RimWorldModManager.Services;
+using RimWorldModManager.Utils;
+
+namespace RimWorldModManager.ViewModels
+{
+    public class MainViewModel : INotifyPropertyChanged
+    {
+        private readonly SteamCmdService _steamService;
+        private readonly ILogger _logger;
+        private bool _isLoading;
+        private string _statusMessage = string.Empty;
+
+        public ObservableCollection<ModInfo> Mods { get; } = new();
+
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set
+            {
+                _isLoading = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string StatusMessage
+        {
+            get => _statusMessage;
+            set
+            {
+                _statusMessage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public MainViewModel()
+        {
+            _logger = new ConsoleLogger();
+            var settings = SettingsManager.Load();
+            _steamService = new SteamCmdService(settings.SteamCmdPath ?? PathHelper.GetSteamCmdExePath(), _logger);
+        }
+
+        public async Task AddModAsync(int workshopId)
+        {
+            IsLoading = true;
+            StatusMessage = "正在下载 Mod...";
+
+            try
+            {
+                var settings = SettingsManager.GetCurrent();
+                var installDir = settings.ModDirectories.Count > 0 
+                    ? settings.ModDirectories[0] 
+                    : PathHelper.GetDefaultModsPath();
+
+                if (!Directory.Exists(installDir))
+                    Directory.CreateDirectory(installDir);
+
+                var result = await _steamService.DownloadModAsync(workshopId, installDir);
+
+                if (result.ExitCode == 0 && !result.TimedOut)
+                {
+                    var mod = ModParser.ParseFromWorkshopId(workshopId, installDir);
+                    if (mod != null)
+                    {
+                        var existingMod = Mods.FirstOrDefault(m => m.WorkshopId == workshopId);
+                        if (existingMod != null)
+                        {
+                            existingMod.Name = mod.Name;
+                            existingMod.Description = mod.Description;
+                            existingMod.LocalPath = mod.LocalPath;
+                            existingMod.LastUpdated = mod.LastUpdated;
+                        }
+                        else
+                        {
+                            Mods.Add(mod);
+                        }
+                        StatusMessage = $"Mod 下载完成: {mod.Name}";
+                    }
+                    else
+                    {
+                        StatusMessage = "Mod 下载成功，但无法解析 Mod 信息";
+                    }
+                }
+                else
+                {
+                    var errorMsg = result.TimedOut ? "下载超时" : 
+                        (string.IsNullOrEmpty(result.StandardError) ? "下载失败" : result.StandardError);
+                    StatusMessage = $"下载失败: {errorMsg}";
+                    _logger.Error(errorMsg);
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"下载异常: {ex.Message}";
+                _logger.Error("下载 Mod 异常", ex);
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        public void LoadMods()
+        {
+            Mods.Clear();
+
+            try
+            {
+                var settings = SettingsManager.GetCurrent();
+                foreach (var modDir in settings.ModDirectories)
+                {
+                    var workshopContentDir = Path.Combine(modDir, "steamapps", "workshop", "content", "294100");
+                    if (Directory.Exists(workshopContentDir))
+                    {
+                        foreach (var dir in Directory.GetDirectories(workshopContentDir))
+                        {
+                            if (int.TryParse(Path.GetFileName(dir), out int workshopId))
+                            {
+                                var mod = ModParser.ParseFromWorkshopId(workshopId, modDir);
+                                if (mod != null)
+                                {
+                                    Mods.Add(mod);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("加载 Mod 列表失败", ex);
+            }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+}
