@@ -34,19 +34,11 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="16,16,16,0">
-                <ui:Button 
-                    Click="BackButton_Click"
-                    Width="40" Height="40"
-                    FontSize="20">
-                    ←
-                </ui:Button>
+            <StackPanel Grid.Row="0" Margin="16,16,16,0">
                 <TextBlock 
                     Text="Mod 详情" 
                     FontSize="18" 
-                    FontWeight="Bold" 
-                    VerticalAlignment="Center"
-                    Margin="8,0,0,0" />
+                    FontWeight="Bold" />
             </StackPanel>
 
             <Border Grid.Row="1" Margin="16,16,16,0" BorderThickness="1">

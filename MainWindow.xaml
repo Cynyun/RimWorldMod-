@@ -24,8 +24,8 @@
                 <ColumnDefinition Width="320" />
             </Grid.ColumnDefinitions>
 
-            <ui:Card Grid.Column="0" Height="Auto" VerticalAlignment="Stretch">
-                <Grid Height="Auto" VerticalAlignment="Stretch">
+            <ui:Card Grid.Column="0">
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
@@ -73,7 +73,7 @@
 
                         <ui:ProgressRing Grid.Column="5" 
                                          x:Name="ProgressRing" 
-                                         IsIndeterminate="{Binding IsLoading}" 
+                                         IsIndeterminate="{Binding IsRefreshing}" 
                                          Width="24" Height="24" 
                                          Margin="0,0,8,0" />
 
@@ -83,7 +83,7 @@
                                    Click="SettingsButton_Click" />
                     </Grid>
 
-                    <ScrollViewer Grid.Row="1" Margin="12" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <ScrollViewer Grid.Row="1" Margin="12" VerticalScrollBarVisibility="Auto">
                         <ui:DataGrid x:Name="ModsDataGrid"
                                      ItemsSource="{Binding Mods}"
                                      SelectedItem="{Binding SelectedMod}"
@@ -91,8 +91,8 @@
                                      CanUserAddRows="False"
                                      CanUserDeleteRows="False"
                                      SelectionChanged="ModsDataGrid_SelectionChanged"
-                                     Height="Auto"
-                                     MinHeight="200">
+                                     HorizontalAlignment="Stretch"
+                                     HorizontalContentAlignment="Stretch">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Workshop ID" 
                                                        Binding="{Binding WorkshopId}" 
@@ -103,7 +103,7 @@
                                 <DataGridTextColumn Header="最后更新" 
                                                        Binding="{Binding LastUpdated, StringFormat='yyyy-MM-dd'}" 
                                                        Width="100" />
-                                <DataGridTemplateColumn Header="启用">
+                                <DataGridTemplateColumn Header="启用" Width="60">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <ui:ToggleSwitch IsChecked="{Binding IsEnabled}" />
@@ -116,8 +116,8 @@
                 </Grid>
             </ui:Card>
 
-            <ui:Card Grid.Column="1" Margin="16,0,0,0" Height="Auto" VerticalAlignment="Stretch">
-                <ScrollViewer Margin="12" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <ui:Card Grid.Column="1" Margin="16,0,0,0">
+                <ScrollViewer Margin="12" VerticalScrollBarVisibility="Auto">
                     <views:ModDetailPage 
                         x:Name="ModDetailPage" 
                         BackRequested="ModDetailPage_BackRequested" />
