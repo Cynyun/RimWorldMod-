@@ -207,6 +207,9 @@ namespace RimWorldModManager.ViewModels
                     {
                         foreach (var dir in Directory.GetDirectories(modDir))
                         {
+                            if (!ModParser.IsValidModDirectory(dir))
+                                continue;
+
                             var dirName = Path.GetFileName(dir);
                             if (uint.TryParse(dirName, out uint workshopId))
                             {

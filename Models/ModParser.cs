@@ -8,6 +8,17 @@ namespace RimWorldModManager.Models
 {
     public static class ModParser
     {
+        public static bool IsValidModDirectory(string dir)
+        {
+            if (!Directory.Exists(dir))
+                return false;
+
+            var modInfoXmlPath = Path.Combine(dir, "mod_info.xml");
+            var aboutXmlPath = Path.Combine(dir, "About", "About.xml");
+
+            return File.Exists(modInfoXmlPath) || File.Exists(aboutXmlPath);
+        }
+
         public static ModInfo ParseFromDirectory(string modDir)
         {
             var modInfo = new ModInfo

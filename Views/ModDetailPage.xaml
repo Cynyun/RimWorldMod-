@@ -41,11 +41,12 @@
                     FontWeight="Bold" />
             </StackPanel>
 
-            <Border Grid.Row="1" Margin="16,16,16,0" BorderThickness="1">
+            <Border Grid.Row="1" Margin="16,16,16,0" BorderThickness="1" Background="#F5F5F5">
                 <Image 
                     Width="260" 
-                    Height="180" 
-                    Stretch="UniformToFill">
+                    Height="Auto"
+                    Stretch="Uniform"
+                    HorizontalAlignment="Center">
                     <Image.Source>
                         <MultiBinding Converter="{StaticResource NullImageConverter}">
                             <Binding Path="Mod.PreviewImagePath" />

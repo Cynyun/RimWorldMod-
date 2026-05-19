@@ -28,17 +28,13 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0" Margin="12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
@@ -50,40 +46,43 @@
                         <ui:Button Grid.Column="1" 
                                    x:Name="DownloadButton" 
                                    Content="下载 Mod"
-                                   Click="DownloadButton_Click"
-                                   Margin="0,0,8,0" />
+                                   Click="DownloadButton_Click" />
+                    </Grid>
 
-                        <ui:Button Grid.Column="2" 
+                    <Grid Grid.Row="1" Margin="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <ui:Button Grid.Column="0" 
                                    x:Name="UpdateButton" 
                                    Content="更新选中"
                                    Click="UpdateButton_Click"
                                    Margin="0,0,8,0" />
 
-                        <ui:Button Grid.Column="3" 
+                        <ui:Button Grid.Column="1" 
                                    x:Name="UpdateAllButton" 
                                    Content="更新全部"
                                    Click="UpdateAllButton_Click"
                                    Margin="0,0,8,0" />
 
-                        <ui:Button Grid.Column="4" 
+                        <ui:Button Grid.Column="2" 
                                    x:Name="RefreshButton" 
                                    Content="刷新"
                                    Click="RefreshButton_Click"
                                    Margin="0,0,8,0" />
 
-                        <ui:ProgressRing Grid.Column="5" 
-                                         x:Name="ProgressRing" 
-                                         IsIndeterminate="{Binding IsRefreshing}" 
-                                         Width="24" Height="24" 
-                                         Margin="0,0,8,0" />
-
-                        <ui:Button Grid.Column="6" 
+                        <ui:Button Grid.Column="3" 
                                    x:Name="SettingsButton" 
                                    Content="设置" 
                                    Click="SettingsButton_Click" />
                     </Grid>
 
-                    <ScrollViewer Grid.Row="1" Margin="12" VerticalScrollBarVisibility="Auto">
+                    <ScrollViewer Grid.Row="2" Margin="12" VerticalScrollBarVisibility="Auto">
                         <ui:DataGrid x:Name="ModsDataGrid"
                                      ItemsSource="{Binding Mods}"
                                      SelectedItem="{Binding SelectedMod}"
@@ -103,13 +102,6 @@
                                 <DataGridTextColumn Header="最后更新" 
                                                        Binding="{Binding LastUpdated, StringFormat='yyyy-MM-dd'}" 
                                                        Width="100" />
-                                <DataGridTemplateColumn Header="启用" Width="60">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <ui:ToggleSwitch IsChecked="{Binding IsEnabled}" />
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
                             </DataGrid.Columns>
                         </ui:DataGrid>
                     </ScrollViewer>
