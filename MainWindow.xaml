@@ -108,11 +108,12 @@
                 </Grid>
             </ui:Card>
 
-            <ui:Card Grid.Column="1" Margin="16,0,0,0">
-                <ScrollViewer Margin="12" VerticalScrollBarVisibility="Auto">
+            <ui:Card Grid.Column="1" Margin="16,0,0,0" Height="Auto">
+                <ScrollViewer Margin="12" VerticalScrollBarVisibility="Auto" Height="Auto">
                     <views:ModDetailPage 
                         x:Name="ModDetailPage" 
-                        BackRequested="ModDetailPage_BackRequested" />
+                        BackRequested="ModDetailPage_BackRequested" 
+                        Height="Auto" />
                 </ScrollViewer>
             </ui:Card>
         </Grid>

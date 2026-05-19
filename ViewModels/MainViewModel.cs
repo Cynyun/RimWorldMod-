@@ -239,8 +239,7 @@ namespace RimWorldModManager.ViewModels
 
             try
             {
-                await Task.Delay(100);
-                LoadMods();
+                await Task.Run(() => LoadMods());
                 StatusMessage = $"已加载 {Mods.Count} 个 Mod";
             }
             catch (Exception ex)

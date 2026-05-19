@@ -5,7 +5,7 @@
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                  mc:Ignorable="d"
-                 Title="设置" Height="400" Width="550"
+                 Title="设置" Height="420" Width="550"
                  WindowStartupLocation="CenterOwner"
                  MouseDown="FluentWindow_MouseDown">
     <Grid Margin="16">
