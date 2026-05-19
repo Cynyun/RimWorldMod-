@@ -5,9 +5,14 @@
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                  xmlns:local="clr-namespace:RimWorldModManager"
+                 xmlns:views="clr-namespace:RimWorldModManager.Views"
                  mc:Ignorable="d"
-                 Title="RimWorld Mod 管理器" Height="600" Width="800"
+                 Title="RimWorld Mod 管理器" Height="600" Width="900"
                  WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <local:InvertBooleanToVisibilityConverter x:Key="InvertBooleanToVisibilityConverter" />
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -18,80 +23,132 @@
         <ui:TitleBar Grid.Row="0" Title="RimWorld Mod 管理器" />
 
         <Grid Grid.Row="1" Margin="16">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="320" />
+            </Grid.ColumnDefinitions>
 
-            <Grid Grid.Row="0" Margin="0,0,0,16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
+            <Border Grid.Column="0" Background="{DynamicResource CardBackgroundFillColor}" CornerRadius="8">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
 
-                <ui:TextBox Grid.Column="0" 
-                            x:Name="WorkshopIdTextBox" 
-                            PlaceholderText="输入 Workshop ID"
-                            Margin="0,0,8,0" />
+                    <Grid Grid.Row="0" Margin="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-                <ui:Button Grid.Column="1" 
-                           x:Name="DownloadButton" 
-                           Content="下载 Mod"
-                           Click="DownloadButton_Click"
-                           Margin="0,0,8,0" />
+                        <ui:TextBox Grid.Column="0" 
+                                    x:Name="WorkshopIdTextBox" 
+                                    PlaceholderText="输入 Workshop ID"
+                                    Margin="0,0,8,0" />
 
-                <ui:Button Grid.Column="2" 
-                           x:Name="UpdateButton" 
-                           Content="更新选中"
-                           Click="UpdateButton_Click"
-                           Margin="0,0,8,0" />
+                        <ui:Button Grid.Column="1" 
+                                   x:Name="DownloadButton" 
+                                   Content="下载 Mod"
+                                   Click="DownloadButton_Click"
+                                   Margin="0,0,8,0" />
 
-                <ui:Button Grid.Column="3" 
-                           x:Name="UpdateAllButton" 
-                           Content="更新全部"
-                           Click="UpdateAllButton_Click"
-                           Margin="0,0,8,0" />
+                        <ui:Button Grid.Column="2" 
+                                   x:Name="UpdateButton" 
+                                   Content="更新选中"
+                                   Click="UpdateButton_Click"
+                                   Margin="0,0,8,0" />
 
-                <ui:ProgressRing Grid.Column="4" 
-                                 x:Name="DownloadProgress" 
-                                 IsIndeterminate="{Binding IsLoading}" 
-                                 Width="24" Height="24" 
-                                 Margin="0,0,8,0" />
+                        <ui:Button Grid.Column="3" 
+                                   x:Name="UpdateAllButton" 
+                                   Content="更新全部"
+                                   Click="UpdateAllButton_Click"
+                                   Margin="0,0,8,0" />
 
-                <ui:Button Grid.Column="5" 
-                           x:Name="SettingsButton" 
-                           Content="设置" 
-                           Click="SettingsButton_Click" />
-            </Grid>
+                        <ui:Button Grid.Column="4" 
+                                   x:Name="RefreshButton" 
+                                   Content="刷新"
+                                   Click="RefreshButton_Click"
+                                   Margin="0,0,8,0" />
 
-            <ui:DataGrid Grid.Row="1" 
-                         x:Name="ModsDataGrid"
-                         ItemsSource="{Binding Mods}"
-                         AutoGenerateColumns="False"
-                         CanUserAddRows="False"
-                         CanUserDeleteRows="False">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Workshop ID" 
-                                           Binding="{Binding WorkshopId}" 
-                                           Width="120" />
-                    <DataGridTextColumn Header="Mod 名称" 
-                                           Binding="{Binding Name}" 
-                                           Width="*" />
-                    <DataGridTemplateColumn Header="启用">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <ui:ToggleSwitch IsChecked="{Binding IsEnabled}" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </ui:DataGrid>
+                        <ui:ProgressRing Grid.Column="5" 
+                                         x:Name="ProgressRing" 
+                                         IsIndeterminate="{Binding IsLoading}" 
+                                         Width="24" Height="24" 
+                                         Margin="0,0,8,0" />
+
+                        <ui:Button Grid.Column="6" 
+                                   x:Name="SettingsButton" 
+                                   Content="设置" 
+                                   Click="SettingsButton_Click" />
+                    </Grid>
+
+                    <Grid Grid.Row="1" Margin="12">
+                        <ui:DataGrid x:Name="ModsDataGrid"
+                                     ItemsSource="{Binding Mods}"
+                                     SelectedItem="{Binding SelectedMod}"
+                                     AutoGenerateColumns="False"
+                                     CanUserAddRows="False"
+                                     CanUserDeleteRows="False"
+                                     SelectionChanged="ModsDataGrid_SelectionChanged">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Workshop ID" 
+                                                       Binding="{Binding WorkshopId}" 
+                                                       Width="120" />
+                                <DataGridTextColumn Header="Mod 名称" 
+                                                       Binding="{Binding Name}" 
+                                                       Width="*" />
+                                <DataGridTextColumn Header="最后更新" 
+                                                       Binding="{Binding LastUpdated, StringFormat='yyyy-MM-dd'}" 
+                                                       Width="100" />
+                                <DataGridTemplateColumn Header="启用">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ui:ToggleSwitch IsChecked="{Binding IsEnabled}" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </ui:DataGrid>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="1" Background="{DynamicResource CardBackgroundFillColor}" CornerRadius="8" Margin="16,0,0,0">
+                <Grid>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasSelectedMod}" Value="False">
+                                    <Setter Property="Opacity" Value="0.5" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+
+                    <views:ModDetailPage 
+                        x:Name="ModDetailPage" 
+                        Visibility="{Binding HasSelectedMod, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        BackRequested="ModDetailPage_BackRequested" />
+
+                    <TextBlock 
+                        Text="请选择一个 Mod 查看详情" 
+                        HorizontalAlignment="Center" 
+                        VerticalAlignment="Center"
+                        Visibility="{Binding HasSelectedMod, Converter={StaticResource InvertBooleanToVisibilityConverter}}"
+                        Foreground="{DynamicResource TextSecondaryColor}" />
+                </Grid>
+            </Border>
         </Grid>
 
-
+        <TextBlock Grid.Row="2" 
+                   Text="{Binding StatusMessage}" 
+                   Margin="16,8,0,8" 
+                   FontSize="12"
+                   Foreground="{DynamicResource TextSecondaryColor}" />
     </Grid>
 </ui:FluentWindow>

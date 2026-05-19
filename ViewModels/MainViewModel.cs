@@ -18,6 +18,8 @@ namespace RimWorldModManager.ViewModels
         private readonly ILogger _logger;
         private bool _isLoading;
         private string _statusMessage = string.Empty;
+        private ModInfo _selectedMod;
+        private bool _isRefreshing;
 
         public ObservableCollection<ModInfo> Mods { get; } = new();
 
@@ -31,6 +33,16 @@ namespace RimWorldModManager.ViewModels
             }
         }
 
+        public bool IsRefreshing
+        {
+            get => _isRefreshing;
+            set
+            {
+                _isRefreshing = value;
+                OnPropertyChanged();
+            }
+        }
+
         public string StatusMessage
         {
             get => _statusMessage;
@@ -40,6 +52,19 @@ namespace RimWorldModManager.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        public ModInfo SelectedMod
+        {
+            get => _selectedMod;
+            set
+            {
+                _selectedMod = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasSelectedMod));
+            }
+        }
+
+        public bool HasSelectedMod => SelectedMod != null;
 
         public MainViewModel()
         {
@@ -77,6 +102,10 @@ namespace RimWorldModManager.ViewModels
                             existingMod.Description = mod.Description;
                             existingMod.LocalPath = mod.LocalPath;
                             existingMod.LastUpdated = mod.LastUpdated;
+                            existingMod.Author = mod.Author;
+                            existingMod.Version = mod.Version;
+                            existingMod.Tags = mod.Tags;
+                            existingMod.PreviewImagePath = mod.PreviewImagePath;
                         }
                         else
                         {
@@ -134,6 +163,10 @@ namespace RimWorldModManager.ViewModels
                             existingMod.Description = mod.Description;
                             existingMod.LocalPath = mod.LocalPath;
                             existingMod.LastUpdated = mod.LastUpdated;
+                            existingMod.Author = mod.Author;
+                            existingMod.Version = mod.Version;
+                            existingMod.Tags = mod.Tags;
+                            existingMod.PreviewImagePath = mod.PreviewImagePath;
                         }
                         StatusMessage = $"Mod 更新完成: {mod.Name}";
                     }
@@ -191,6 +224,38 @@ namespace RimWorldModManager.ViewModels
             {
                 _logger.Error("加载 Mod 列表失败", ex);
             }
+        }
+
+        public async Task RefreshModsAsync()
+        {
+            IsRefreshing = true;
+            StatusMessage = "正在刷新 Mod 列表...";
+
+            try
+            {
+                await Task.Delay(100);
+                LoadMods();
+                StatusMessage = $"已加载 {Mods.Count} 个 Mod";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"刷新失败: {ex.Message}";
+                _logger.Error("刷新 Mod 列表失败", ex);
+            }
+            finally
+            {
+                IsRefreshing = false;
+            }
+        }
+
+        public void SelectMod(ModInfo mod)
+        {
+            SelectedMod = mod;
+        }
+
+        public void ClearSelection()
+        {
+            SelectedMod = null;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

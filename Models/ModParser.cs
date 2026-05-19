@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml;
 
 namespace RimWorldModManager.Models
@@ -35,6 +37,8 @@ namespace RimWorldModManager.Models
                     modInfo.Name = di.Name;
                     modInfo.Description = "无法解析 Mod 信息";
                 }
+
+                FindPreviewImage(modDir, modInfo);
             }
 
             return modInfo;
@@ -45,6 +49,8 @@ namespace RimWorldModManager.Models
             try
             {
                 using var reader = XmlReader.Create(xmlPath);
+                var tags = new List<string>();
+                
                 while (reader.Read())
                 {
                     if (reader.NodeType == XmlNodeType.Element)
@@ -57,9 +63,20 @@ namespace RimWorldModManager.Models
                             case "description":
                                 modInfo.Description = reader.ReadElementContentAsString();
                                 break;
+                            case "author":
+                                modInfo.Author = reader.ReadElementContentAsString();
+                                break;
+                            case "version":
+                                modInfo.Version = reader.ReadElementContentAsString();
+                                break;
+                            case "tag":
+                                tags.Add(reader.ReadElementContentAsString());
+                                break;
                         }
                     }
                 }
+                
+                modInfo.Tags = tags.ToArray();
             }
             catch
             {
@@ -82,6 +99,8 @@ namespace RimWorldModManager.Models
             try
             {
                 using var reader = XmlReader.Create(xmlPath);
+                var tags = new List<string>();
+                
                 while (reader.Read())
                 {
                     if (reader.NodeType == XmlNodeType.Element)
@@ -94,9 +113,20 @@ namespace RimWorldModManager.Models
                             case "description":
                                 modInfo.Description = reader.ReadElementContentAsString();
                                 break;
+                            case "author":
+                                modInfo.Author = reader.ReadElementContentAsString();
+                                break;
+                            case "version":
+                                modInfo.Version = reader.ReadElementContentAsString();
+                                break;
+                            case "tag":
+                                tags.Add(reader.ReadElementContentAsString());
+                                break;
                         }
                     }
                 }
+                
+                modInfo.Tags = tags.ToArray();
             }
             catch
             {
@@ -111,6 +141,30 @@ namespace RimWorldModManager.Models
                     modInfo.Name = "未知";
                 }
                 modInfo.Description = "解析 About.xml 失败";
+            }
+        }
+
+        private static void FindPreviewImage(string modDir, ModInfo modInfo)
+        {
+            var aboutDir = Path.Combine(modDir, "About");
+            if (Directory.Exists(aboutDir))
+            {
+                var imageExtensions = new[] { ".png", ".jpg", ".jpeg", ".bmp", ".gif" };
+                var imageFiles = Directory.GetFiles(aboutDir)
+                    .Where(f => imageExtensions.Any(ext => f.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
+                    .OrderBy(f => 
+                    {
+                        var name = Path.GetFileNameWithoutExtension(f).ToLower();
+                        if (name.Contains("preview")) return 0;
+                        if (name.Contains("icon")) return 1;
+                        return 2;
+                    })
+                    .ToList();
+
+                if (imageFiles.Any())
+                {
+                    modInfo.PreviewImagePath = imageFiles.First();
+                }
             }
         }
 

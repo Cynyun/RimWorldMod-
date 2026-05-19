@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using RimWorldModManager.Models;
 using RimWorldModManager.ViewModels;
 using Wpf.Ui.Controls;
@@ -90,11 +91,30 @@ namespace RimWorldModManager
             System.Windows.MessageBox.Show("所有 Mod 更新完成", "提示", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
         }
 
+        private async void RefreshButton_Click(object sender, RoutedEventArgs e)
+        {
+            await _viewModel.RefreshModsAsync();
+        }
+
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
             var settingsWindow = new SettingsWindow();
             settingsWindow.Owner = this;
             settingsWindow.ShowDialog();
+        }
+
+        private void ModsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_viewModel.SelectedMod != null)
+            {
+                ModDetailPage.LoadMod(_viewModel.SelectedMod);
+            }
+        }
+
+        private void ModDetailPage_BackRequested(object sender, RoutedEventArgs e)
+        {
+            _viewModel.ClearSelection();
+            ModsDataGrid.SelectedItem = null;
         }
     }
 }

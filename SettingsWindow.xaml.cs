@@ -1,15 +1,17 @@
 using System.IO;
 using System.Windows;
 using RimWorldModManager.ViewModels;
+using Wpf.Ui.Controls;
 
 namespace RimWorldModManager
 {
-    public partial class SettingsWindow : Window
+    public partial class SettingsWindow : FluentWindow
     {
         private readonly SettingsViewModel _viewModel;
 
         public SettingsWindow()
         {
+            InitializeComponent();
             _viewModel = new SettingsViewModel();
             DataContext = _viewModel;
         }
@@ -39,6 +41,11 @@ namespace RimWorldModManager
             {
                 _viewModel.ModDownloadPath = folderDialog.SelectedPath;
             }
+        }
+
+        private async void TestSteamCmd_Click(object sender, RoutedEventArgs e)
+        {
+            await _viewModel.TestSteamCmdAsync();
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)

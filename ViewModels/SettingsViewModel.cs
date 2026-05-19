@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using RimWorldModManager.Config;
 using RimWorldModManager.Utils;
 
@@ -11,6 +13,8 @@ namespace RimWorldModManager.ViewModels
     {
         private string _steamCmdPath;
         private string _modDownloadPath;
+        private bool _isCheckingSteamCmd;
+        private string _steamCmdStatus;
 
         public string SteamCmdPath
         {
@@ -28,6 +32,26 @@ namespace RimWorldModManager.ViewModels
             set
             {
                 _modDownloadPath = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsCheckingSteamCmd
+        {
+            get => _isCheckingSteamCmd;
+            set
+            {
+                _isCheckingSteamCmd = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string SteamCmdStatus
+        {
+            get => _steamCmdStatus;
+            set
+            {
+                _steamCmdStatus = value;
                 OnPropertyChanged();
             }
         }
@@ -70,6 +94,63 @@ namespace RimWorldModManager.ViewModels
             }
             
             SettingsManager.Save();
+        }
+
+        public async Task<bool> TestSteamCmdAsync()
+        {
+            IsCheckingSteamCmd = true;
+            SteamCmdStatus = "正在检测 SteamCMD...";
+
+            try
+            {
+                if (string.IsNullOrWhiteSpace(SteamCmdPath) || !File.Exists(SteamCmdPath))
+                {
+                    SteamCmdStatus = "SteamCMD 路径不存在";
+                    IsCheckingSteamCmd = false;
+                    return false;
+                }
+
+                using var process = new Process();
+                process.StartInfo.FileName = SteamCmdPath;
+                process.StartInfo.Arguments = "+quit";
+                process.StartInfo.WorkingDirectory = Path.GetDirectoryName(SteamCmdPath);
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.CreateNoWindow = true;
+
+                var tcs = new TaskCompletionSource<bool>();
+                process.Exited += (sender, e) =>
+                {
+                    tcs.SetResult(process.ExitCode == 0);
+                };
+
+                process.Start();
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+
+                var timeoutTask = Task.Delay(30000);
+                var completedTask = await Task.WhenAny(tcs.Task, timeoutTask);
+
+                if (completedTask == timeoutTask)
+                {
+                    try { process.Kill(); } catch { }
+                    SteamCmdStatus = "检测超时";
+                    IsCheckingSteamCmd = false;
+                    return false;
+                }
+
+                var result = await tcs.Task;
+                SteamCmdStatus = result ? "SteamCMD 检测成功" : "SteamCMD 执行失败";
+                IsCheckingSteamCmd = false;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                SteamCmdStatus = $"检测异常: {ex.Message}";
+                IsCheckingSteamCmd = false;
+                return false;
+            }
         }
 
         public bool ValidateSettings()
