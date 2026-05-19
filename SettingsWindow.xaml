@@ -5,10 +5,13 @@
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                  mc:Ignorable="d"
-                 Title="设置" Height="300" Width="550"
-                 WindowStartupLocation="CenterOwner">
+                 Title="设置" Height="400" Width="550"
+                 WindowStartupLocation="CenterOwner"
+                 MouseDown="FluentWindow_MouseDown">
     <Grid Margin="16">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -52,7 +55,24 @@
             </Grid>
         </StackPanel>
 
-        <Grid Grid.Row="4" Margin="0,16,0,0">
+        <StackPanel Grid.Row="3" Margin="0,16,0,0">
+            <TextBlock Text="Steam 账号" Margin="0,0,0,8" />
+            <ui:TextBox 
+                x:Name="SteamAccountTextBox"
+                Text="{Binding SteamAccount}" 
+                PlaceholderText="输入 Steam 账号"
+                TextChanged="SteamAccountTextBox_TextChanged" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="4" Margin="0,16,0,0">
+            <TextBlock Text="Steam 密码" Margin="0,0,0,8" />
+            <ui:PasswordBox 
+                x:Name="SteamPasswordBox"
+                PlaceholderText="输入 Steam 密码"
+                PasswordChanged="SteamPasswordBox_PasswordChanged" />
+        </StackPanel>
+
+        <Grid Grid.Row="6" Margin="0,16,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />

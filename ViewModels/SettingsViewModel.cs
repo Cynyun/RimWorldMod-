@@ -15,6 +15,28 @@ namespace RimWorldModManager.ViewModels
         private string _modDownloadPath;
         private bool _isCheckingSteamCmd;
         private string _steamCmdStatus;
+        private string _steamAccount;
+        private string _steamPassword;
+
+        public string SteamAccount
+        {
+            get => _steamAccount;
+            set
+            {
+                _steamAccount = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string SteamPassword
+        {
+            get => _steamPassword;
+            set
+            {
+                _steamPassword = value;
+                OnPropertyChanged();
+            }
+        }
 
         public string SteamCmdPath
         {

@@ -25,6 +25,9 @@ namespace RimWorldModManager
             _originalSteamCmdPath = settings.SteamCmdPath;
             _originalModPath = settings.ModDirectories.Count > 0 ? settings.ModDirectories[0] : string.Empty;
             _pathsChanged = false;
+
+            _viewModel.SteamAccount = "anonymous";
+            _viewModel.SteamPassword = string.Empty;
         }
 
         private void BrowseSteamCmd_Click(object sender, RoutedEventArgs e)
@@ -74,6 +77,31 @@ namespace RimWorldModManager
         {
             DialogResult = false;
             Close();
+        }
+
+        private void FluentWindow_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+            {
+                DragMove();
+            }
+        }
+
+        private void SteamAccountTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(_viewModel.SteamAccount) && _viewModel.SteamAccount != "anonymous")
+            {
+                System.Windows.MessageBox.Show("本功能还未完善，暂不提供使用。", "提示", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+            }
+        }
+
+        private void SteamPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            var passwordBox = sender as Wpf.Ui.Controls.PasswordBox;
+            if (passwordBox != null && !string.IsNullOrEmpty(passwordBox.Password))
+            {
+                System.Windows.MessageBox.Show("本功能还未完善，暂不提供使用。", "提示", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+            }
         }
     }
 }

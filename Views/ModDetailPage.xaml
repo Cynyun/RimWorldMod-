@@ -7,7 +7,7 @@
              xmlns:converters="clr-namespace:RimWorldModManager.Converters"
              xmlns:local="clr-namespace:RimWorldModManager"
              mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="300">
+             d:DesignHeight="450" d:DesignWidth="400">
     <UserControl.Resources>
         <converters:NullImageConverter x:Key="NullImageConverter" />
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -41,12 +41,14 @@
                     FontWeight="Bold" />
             </StackPanel>
 
-            <Border Grid.Row="1" Margin="16,16,16,0" BorderThickness="1" Background="#F5F5F5">
+            <Border Grid.Row="1" Margin="8,16,8,0" BorderThickness="1" Background="#F5F5F5">
                 <Image 
-                    Width="260" 
+                    Width="Auto" 
                     Height="Auto"
-                    Stretch="Uniform"
-                    HorizontalAlignment="Center">
+                    MaxWidth="320"
+                    Stretch="UniformToFill"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch">
                     <Image.Source>
                         <MultiBinding Converter="{StaticResource NullImageConverter}">
                             <Binding Path="Mod.PreviewImagePath" />
@@ -55,32 +57,32 @@
                 </Image>
             </Border>
 
-            <StackPanel Grid.Row="2" Margin="16,16,16,0">
+            <StackPanel Grid.Row="2" Margin="8,16,8,0">
                 <TextBlock Text="Mod 名称" FontSize="12" />
                 <TextBlock Text="{Binding Mod.Name}" FontSize="16" FontWeight="Bold" Margin="0,4,0,0" />
             </StackPanel>
 
-            <StackPanel Grid.Row="3" Margin="16,8,16,0">
+            <StackPanel Grid.Row="3" Margin="8,8,8,0">
                 <TextBlock Text="作者" FontSize="12" />
                 <TextBlock Text="{Binding AuthorDisplay}" FontSize="14" Margin="0,4,0,0" />
             </StackPanel>
 
-            <StackPanel Grid.Row="4" Margin="16,8,16,0">
+            <StackPanel Grid.Row="4" Margin="8,8,8,0">
                 <TextBlock Text="版本" FontSize="12" />
                 <TextBlock Text="{Binding VersionDisplay}" FontSize="14" Margin="0,4,0,0" />
             </StackPanel>
 
-            <StackPanel Grid.Row="5" Margin="16,8,16,0">
+            <StackPanel Grid.Row="5" Margin="8,8,8,0">
                 <TextBlock Text="最后更新" FontSize="12" />
                 <TextBlock Text="{Binding LastUpdatedDisplay}" FontSize="14" Margin="0,4,0,0" />
             </StackPanel>
 
-            <StackPanel Grid.Row="6" Margin="16,8,16,0">
+            <StackPanel Grid.Row="6" Margin="8,8,8,0">
                 <TextBlock Text="标签" FontSize="12" />
                 <TextBlock Text="{Binding TagsDisplay}" FontSize="12" Margin="0,4,0,0" TextWrapping="Wrap" />
             </StackPanel>
 
-            <StackPanel Grid.Row="7" Margin="16,8,16,16">
+            <StackPanel Grid.Row="7" Margin="8,8,8,16">
                 <TextBlock Text="描述" FontSize="12" />
                 <TextBlock Text="{Binding DescriptionDisplay}" FontSize="12" Margin="0,4,0,0" TextWrapping="Wrap" />
             </StackPanel>
