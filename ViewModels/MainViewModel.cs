@@ -203,18 +203,21 @@ namespace RimWorldModManager.ViewModels
                 var settings = SettingsManager.GetCurrent();
                 foreach (var modDir in settings.ModDirectories)
                 {
-                    var workshopContentDir = Path.Combine(modDir, "steamapps", "workshop", "content", "294100");
-                    if (Directory.Exists(workshopContentDir))
+                    if (Directory.Exists(modDir))
                     {
-                        foreach (var dir in Directory.GetDirectories(workshopContentDir))
+                        foreach (var dir in Directory.GetDirectories(modDir))
                         {
-                            if (uint.TryParse(Path.GetFileName(dir), out uint workshopId))
+                            var dirName = Path.GetFileName(dir);
+                            if (uint.TryParse(dirName, out uint workshopId))
                             {
-                                var mod = ModParser.ParseFromWorkshopId(workshopId, modDir);
-                                if (mod != null)
-                                {
-                                    Mods.Add(mod);
-                                }
+                                var mod = ModParser.ParseFromDirectory(dir);
+                                mod.WorkshopId = workshopId;
+                                Mods.Add(mod);
+                            }
+                            else
+                            {
+                                var mod = ModParser.ParseFromDirectory(dir);
+                                Mods.Add(mod);
                             }
                         }
                     }

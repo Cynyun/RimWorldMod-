@@ -31,19 +31,55 @@ namespace RimWorldModManager.ViewModels
             ? $"https://steamcommunity.com/workshop/filedetails/?id={Mod.WorkshopId}" 
             : string.Empty;
 
-        public string AuthorDisplay => Mod?.Author ?? "未知";
+        public string AuthorDisplay
+        {
+            get
+            {
+                if (Mod != null && !string.IsNullOrEmpty(Mod.Author))
+                    return Mod.Author;
+                return "未知";
+            }
+        }
 
-        public string VersionDisplay => Mod?.Version ?? "未知";
+        public string VersionDisplay
+        {
+            get
+            {
+                if (Mod != null && !string.IsNullOrEmpty(Mod.Version))
+                    return Mod.Version;
+                return "未知";
+            }
+        }
 
-        public string DescriptionDisplay => Mod?.Description ?? "暂无描述";
+        public string DescriptionDisplay
+        {
+            get
+            {
+                if (Mod != null && !string.IsNullOrEmpty(Mod.Description))
+                    return Mod.Description;
+                return "暂无描述";
+            }
+        }
 
-        public string TagsDisplay => Mod?.Tags != null && Mod.Tags.Length > 0 
-            ? string.Join(", ", Mod.Tags) 
-            : "无";
+        public string TagsDisplay
+        {
+            get
+            {
+                if (Mod != null && Mod.Tags != null && Mod.Tags.Length > 0)
+                    return string.Join(", ", Mod.Tags);
+                return "无";
+            }
+        }
 
-        public string LastUpdatedDisplay => Mod?.LastUpdated != DateTime.MinValue 
-            ? Mod.LastUpdated.ToString("yyyy-MM-dd HH:mm:ss") 
-            : "未知";
+        public string LastUpdatedDisplay
+        {
+            get
+            {
+                if (Mod != null && Mod.LastUpdated != DateTime.MinValue)
+                    return Mod.LastUpdated.ToString("yyyy-MM-dd HH:mm:ss");
+                return "未知";
+            }
+        }
 
         public void LoadMod(ModInfo mod)
         {

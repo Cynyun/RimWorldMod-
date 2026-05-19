@@ -9,10 +9,6 @@
                  mc:Ignorable="d"
                  Title="RimWorld Mod 管理器" Height="600" Width="900"
                  WindowStartupLocation="CenterScreen">
-    <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <local:InvertBooleanToVisibilityConverter x:Key="InvertBooleanToVisibilityConverter" />
-    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -28,8 +24,8 @@
                 <ColumnDefinition Width="320" />
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0" Background="#F5F5F5" CornerRadius="8">
-                <Grid>
+            <ui:Card Grid.Column="0" Height="Auto" VerticalAlignment="Stretch">
+                <Grid Height="Auto" VerticalAlignment="Stretch">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
@@ -87,14 +83,16 @@
                                    Click="SettingsButton_Click" />
                     </Grid>
 
-                    <Grid Grid.Row="1" Margin="12">
-                        <DataGrid x:Name="ModsDataGrid"
+                    <ScrollViewer Grid.Row="1" Margin="12" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                        <ui:DataGrid x:Name="ModsDataGrid"
                                      ItemsSource="{Binding Mods}"
                                      SelectedItem="{Binding SelectedMod}"
                                      AutoGenerateColumns="False"
                                      CanUserAddRows="False"
                                      CanUserDeleteRows="False"
-                                     SelectionChanged="ModsDataGrid_SelectionChanged">
+                                     SelectionChanged="ModsDataGrid_SelectionChanged"
+                                     Height="Auto"
+                                     MinHeight="200">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Workshop ID" 
                                                        Binding="{Binding WorkshopId}" 
@@ -108,47 +106,28 @@
                                 <DataGridTemplateColumn Header="启用">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <ToggleButton IsChecked="{Binding IsEnabled}" />
+                                            <ui:ToggleSwitch IsChecked="{Binding IsEnabled}" />
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                             </DataGrid.Columns>
-                        </DataGrid>
-                    </Grid>
+                        </ui:DataGrid>
+                    </ScrollViewer>
                 </Grid>
-            </Border>
+            </ui:Card>
 
-            <Border Grid.Column="1" Background="#F5F5F5" CornerRadius="8" Margin="16,0,0,0">
-                <Grid>
-                    <Grid.Style>
-                        <Style TargetType="Grid">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding HasSelectedMod}" Value="False">
-                                    <Setter Property="Opacity" Value="0.5" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Grid.Style>
-
+            <ui:Card Grid.Column="1" Margin="16,0,0,0" Height="Auto" VerticalAlignment="Stretch">
+                <ScrollViewer Margin="12" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                     <views:ModDetailPage 
                         x:Name="ModDetailPage" 
-                        Visibility="{Binding HasSelectedMod, Converter={StaticResource BooleanToVisibilityConverter}}"
                         BackRequested="ModDetailPage_BackRequested" />
-
-                    <TextBlock 
-                        Text="请选择一个 Mod 查看详情" 
-                        HorizontalAlignment="Center" 
-                        VerticalAlignment="Center"
-                        Visibility="{Binding HasSelectedMod, Converter={StaticResource InvertBooleanToVisibilityConverter}}"
-                        Foreground="#666666" />
-                </Grid>
-            </Border>
+                </ScrollViewer>
+            </ui:Card>
         </Grid>
 
         <TextBlock Grid.Row="2" 
                    Text="{Binding StatusMessage}" 
                    Margin="16,8,0,8" 
-                   FontSize="12"
-                   Foreground="#666666" />
+                   FontSize="12" />
     </Grid>
 </ui:FluentWindow>
