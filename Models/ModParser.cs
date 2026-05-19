@@ -114,7 +114,7 @@ namespace RimWorldModManager.Models
             }
         }
 
-        public static ModInfo ParseFromWorkshopId(int workshopId, string baseModsPath)
+        public static ModInfo ParseFromWorkshopId(uint workshopId, string baseModsPath)
         {
             var modDir = Path.Combine(baseModsPath, "steamapps", "workshop", "content", "294100", workshopId.ToString());
             if (Directory.Exists(modDir))

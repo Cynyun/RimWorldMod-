@@ -26,7 +26,7 @@ namespace RimWorldModManager.Services
             _logger = logger;
         }
 
-        public async Task<ProcessResult> DownloadModAsync(int workshopId, string installDir)
+        public async Task<ProcessResult> DownloadModAsync(uint workshopId, string installDir)
         {
             var args = new[]
             {

@@ -48,7 +48,7 @@ namespace RimWorldModManager.ViewModels
             _steamService = new SteamCmdService(settings.SteamCmdPath ?? PathHelper.GetSteamCmdExePath(), _logger);
         }
 
-        public async Task AddModAsync(int workshopId)
+        public async Task AddModAsync(uint workshopId)
         {
             IsLoading = true;
             StatusMessage = "正在下载 Mod...";
@@ -108,6 +108,59 @@ namespace RimWorldModManager.ViewModels
             }
         }
 
+        public async Task UpdateModAsync(uint workshopId)
+        {
+            IsLoading = true;
+            StatusMessage = "正在更新 Mod...";
+
+            try
+            {
+                var settings = SettingsManager.GetCurrent();
+                var installDir = settings.ModDirectories.Count > 0 
+                    ? settings.ModDirectories[0] 
+                    : PathHelper.GetDefaultModsPath();
+
+                var result = await _steamService.DownloadModAsync(workshopId, installDir);
+
+                if (result.ExitCode == 0 && !result.TimedOut)
+                {
+                    var mod = ModParser.ParseFromWorkshopId(workshopId, installDir);
+                    if (mod != null)
+                    {
+                        var existingMod = Mods.FirstOrDefault(m => m.WorkshopId == workshopId);
+                        if (existingMod != null)
+                        {
+                            existingMod.Name = mod.Name;
+                            existingMod.Description = mod.Description;
+                            existingMod.LocalPath = mod.LocalPath;
+                            existingMod.LastUpdated = mod.LastUpdated;
+                        }
+                        StatusMessage = $"Mod 更新完成: {mod.Name}";
+                    }
+                    else
+                    {
+                        StatusMessage = "Mod 更新成功，但无法解析 Mod 信息";
+                    }
+                }
+                else
+                {
+                    var errorMsg = result.TimedOut ? "更新超时" : 
+                        (string.IsNullOrEmpty(result.StandardError) ? "更新失败" : result.StandardError);
+                    StatusMessage = $"更新失败: {errorMsg}";
+                    _logger.Error(errorMsg);
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"更新异常: {ex.Message}";
+                _logger.Error("更新 Mod 异常", ex);
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
         public void LoadMods()
         {
             Mods.Clear();
@@ -122,7 +175,7 @@ namespace RimWorldModManager.ViewModels
                     {
                         foreach (var dir in Directory.GetDirectories(workshopContentDir))
                         {
-                            if (int.TryParse(Path.GetFileName(dir), out int workshopId))
+                            if (uint.TryParse(Path.GetFileName(dir), out uint workshopId))
                             {
                                 var mod = ModParser.ParseFromWorkshopId(workshopId, modDir);
                                 if (mod != null)

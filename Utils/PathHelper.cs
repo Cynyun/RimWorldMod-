@@ -7,7 +7,7 @@ namespace RimWorldModManager.Utils
         public static string GetSolutionRoot()
         {
             var baseDir = AppContext.BaseDirectory;
-            return Path.GetFullPath(Path.Combine(baseDir, "..", ".."));
+            return Path.GetFullPath(Path.Combine(baseDir, "..", "..", ".."));
         }
 
         public static string GetSteamCmdExePath()

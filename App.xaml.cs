@@ -6,7 +6,7 @@ using RimWorldModManager.Utils;
 
 namespace RimWorldModManager
 {
-    public partial class App : Application
+    public partial class App : System.Windows.Application
     {
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -16,8 +16,8 @@ namespace RimWorldModManager
 
             if (!ValidateSteamCmd())
             {
-                MessageBox.Show("未找到 steamcmd.exe，请确保 steamcmd 目录已正确放置在解决方案根目录下。", 
-                    "初始化错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                System.Windows.MessageBox.Show("未找到 steamcmd.exe，Mod 下载功能将不可用。\n\n请从 https://developer.valvesoftware.com/wiki/SteamCMD 下载 steamcmd.zip，\n解压到解决方案根目录的 steamcmd 文件夹中。", 
+                    "提示", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
             }
 
             SettingsManager.Load();
