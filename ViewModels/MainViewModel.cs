@@ -20,8 +20,21 @@ namespace RimWorldModManager.ViewModels
         private string _statusMessage = string.Empty;
         private ModInfo _selectedMod;
         private bool _isRefreshing;
+        private string _searchText = string.Empty;
+        private ObservableCollection<ModInfo> _allMods = new();
 
         public ObservableCollection<ModInfo> Mods { get; } = new();
+
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                _searchText = value;
+                OnPropertyChanged();
+                ApplySearchFilter();
+            }
+        }
 
         public bool IsLoading
         {
@@ -196,6 +209,7 @@ namespace RimWorldModManager.ViewModels
 
         public void LoadMods()
         {
+            _allMods.Clear();
             Mods.Clear();
 
             try
@@ -215,12 +229,12 @@ namespace RimWorldModManager.ViewModels
                             {
                                 var mod = ModParser.ParseFromDirectory(dir);
                                 mod.WorkshopId = workshopId;
-                                Mods.Add(mod);
+                                _allMods.Add(mod);
                             }
                             else
                             {
                                 var mod = ModParser.ParseFromDirectory(dir);
-                                Mods.Add(mod);
+                                _allMods.Add(mod);
                             }
                         }
                     }
@@ -240,6 +254,7 @@ namespace RimWorldModManager.ViewModels
             try
             {
                 await Task.Run(() => LoadMods());
+                ApplySearchFilter();
                 StatusMessage = $"已加载 {Mods.Count} 个 Mod";
             }
             catch (Exception ex)
@@ -250,6 +265,32 @@ namespace RimWorldModManager.ViewModels
             finally
             {
                 IsRefreshing = false;
+            }
+        }
+
+        private void ApplySearchFilter()
+        {
+            Mods.Clear();
+
+            if (string.IsNullOrWhiteSpace(_searchText))
+            {
+                foreach (var mod in _allMods)
+                {
+                    Mods.Add(mod);
+                }
+            }
+            else
+            {
+                var searchLower = _searchText.ToLowerInvariant();
+                foreach (var mod in _allMods)
+                {
+                    if ((mod.Name != null && mod.Name.ToLowerInvariant().Contains(searchLower)) ||
+                        (mod.Author != null && mod.Author.ToLowerInvariant().Contains(searchLower)) ||
+                        (mod.WorkshopId != 0 && mod.WorkshopId.ToString().Contains(searchLower)))
+                    {
+                        Mods.Add(mod);
+                    }
+                }
             }
         }
 

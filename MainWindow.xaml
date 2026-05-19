@@ -51,6 +51,7 @@
 
                     <Grid Grid.Row="1" Margin="12">
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
@@ -58,25 +59,31 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <ui:Button Grid.Column="0" 
+                        <ui:TextBox Grid.Column="0" 
+                                    x:Name="SearchTextBox"
+                                    Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                    PlaceholderText="搜索 Mod..."
+                                    Margin="0,0,8,0" />
+
+                        <ui:Button Grid.Column="1" 
                                    x:Name="UpdateButton" 
                                    Content="更新选中"
                                    Click="UpdateButton_Click"
                                    Margin="0,0,8,0" />
 
-                        <ui:Button Grid.Column="1" 
+                        <ui:Button Grid.Column="2" 
                                    x:Name="UpdateAllButton" 
                                    Content="更新全部"
                                    Click="UpdateAllButton_Click"
                                    Margin="0,0,8,0" />
 
-                        <ui:Button Grid.Column="2" 
+                        <ui:Button Grid.Column="3" 
                                    x:Name="RefreshButton" 
                                    Content="刷新"
                                    Click="RefreshButton_Click"
                                    Margin="0,0,8,0" />
 
-                        <ui:Button Grid.Column="3" 
+                        <ui:Button Grid.Column="4" 
                                    x:Name="SettingsButton" 
                                    Content="设置" 
                                    Click="SettingsButton_Click" />
