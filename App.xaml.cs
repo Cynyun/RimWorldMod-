@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Windows;
 using RimWorldModManager.Config;
@@ -36,7 +36,8 @@ namespace RimWorldModManager
 
         private bool ValidateSteamCmd()
         {
-            var steamCmdPath = PathHelper.GetSteamCmdExePath();
+            var settings = SettingsManager.GetCurrent();
+            var steamCmdPath = settings.SteamCmdPath ?? PathHelper.GetSteamCmdExePath();
             return File.Exists(steamCmdPath);
         }
     }

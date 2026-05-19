@@ -4,25 +4,24 @@ namespace RimWorldModManager.Utils
 {
     public static class PathHelper
     {
-        public static string GetSolutionRoot()
+        public static string GetAppRoot()
         {
-            var baseDir = AppContext.BaseDirectory;
-            return Path.GetFullPath(Path.Combine(baseDir, "..", "..", ".."));
+            return AppContext.BaseDirectory;
         }
 
         public static string GetSteamCmdExePath()
         {
-            return Path.Combine(GetSolutionRoot(), "steamcmd", "steamcmd.exe");
+            return Path.Combine(GetAppRoot(), "steamcmd", "steamcmd.exe");
         }
 
         public static string GetDefaultModsPath()
         {
-            return Path.Combine(GetSolutionRoot(), "mods");
+            return Path.Combine(GetAppRoot(), "mods");
         }
 
         public static string GetConfigPath()
         {
-            return Path.Combine(GetSolutionRoot(), "config");
+            return Path.Combine(GetAppRoot(), "config");
         }
 
         public static string GetSettingsFilePath()
