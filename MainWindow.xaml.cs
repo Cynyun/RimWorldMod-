@@ -21,9 +21,9 @@ namespace RimWorldModManager
             Loaded += MainWindow_Loaded;
         }
 
-        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            _viewModel.LoadMods();
+            await _viewModel.RefreshModsAsync();
         }
 
         private async void DownloadButton_Click(object sender, RoutedEventArgs e)

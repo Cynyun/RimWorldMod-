@@ -207,10 +207,9 @@ namespace RimWorldModManager.ViewModels
             }
         }
 
-        public void LoadMods()
+        private List<ModInfo> LoadModsInternal()
         {
-            _allMods.Clear();
-            Mods.Clear();
+            var modList = new List<ModInfo>();
 
             try
             {
@@ -229,12 +228,12 @@ namespace RimWorldModManager.ViewModels
                             {
                                 var mod = ModParser.ParseFromDirectory(dir);
                                 mod.WorkshopId = workshopId;
-                                _allMods.Add(mod);
+                                modList.Add(mod);
                             }
                             else
                             {
                                 var mod = ModParser.ParseFromDirectory(dir);
-                                _allMods.Add(mod);
+                                modList.Add(mod);
                             }
                         }
                     }
@@ -244,6 +243,8 @@ namespace RimWorldModManager.ViewModels
             {
                 _logger.Error("加载 Mod 列表失败", ex);
             }
+
+            return modList;
         }
 
         public async Task RefreshModsAsync()
@@ -253,7 +254,14 @@ namespace RimWorldModManager.ViewModels
 
             try
             {
-                await Task.Run(() => LoadMods());
+                var modList = await Task.Run(() => LoadModsInternal());
+                
+                _allMods.Clear();
+                foreach (var mod in modList)
+                {
+                    _allMods.Add(mod);
+                }
+                
                 ApplySearchFilter();
                 StatusMessage = $"已加载 {Mods.Count} 个 Mod";
             }
