@@ -53,8 +53,9 @@ mono_crash.*
 steamcmd/
 !steamcmd/.gitkeep
 
-# Config (keep but don't commit user settings)
-config/
+# Config (keep user settings but commit code)
+config/settings.json
+config/*.json
 !config/.gitkeep
 
 # Mods (downloaded mods)
