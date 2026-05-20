@@ -26,7 +26,17 @@ namespace RimWorldModManager.Utils
 
         public static string GetWorkshopContentPath()
         {
-            return Path.Combine(GetAppRoot(), "steamcmd", "steamapps", "workshop", "content", "294100");
+            var steamCmdPath = GetSteamCmdExePath();
+            var steamCmdDir = Path.GetDirectoryName(steamCmdPath);
+            
+            if (string.IsNullOrEmpty(steamCmdDir))
+            {
+                steamCmdDir = Path.Combine(GetAppRoot(), "steamcmd");
+            }
+            
+            var workshopPath = Path.Combine(steamCmdDir, "steamapps", "workshop", "content", "294100");
+            
+            return workshopPath;
         }
 
         public static string GetSettingsFilePath()

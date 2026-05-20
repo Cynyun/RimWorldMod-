@@ -96,6 +96,9 @@ namespace RimWorldModManager.ViewModels
             {
                 ModDownloadPath = PathHelper.GetDefaultModsPath();
             }
+
+            SteamAccount = "anonymous";
+            SteamPassword = "anonymous";
         }
 
         public void SaveSettings()

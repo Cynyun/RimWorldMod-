@@ -24,6 +24,20 @@ namespace RimWorldModManager.Services
             {
                 try
                 {
+                    if (string.IsNullOrEmpty(item.SourcePath) || !Directory.Exists(item.SourcePath))
+                    {
+                        result.FailureCount++;
+                        result.FailureMessages.Add($"{item.DisplayName} 源路径不存在");
+                        continue;
+                    }
+
+                    if (string.IsNullOrEmpty(item.DisplayName))
+                    {
+                        result.FailureCount++;
+                        result.FailureMessages.Add($"Workshop ID {item.WorkshopId} 显示名称为空");
+                        continue;
+                    }
+
                     var destPath = GetDestinationPath(item.DisplayName);
                     CopyModDirectory(item.SourcePath, destPath);
                     

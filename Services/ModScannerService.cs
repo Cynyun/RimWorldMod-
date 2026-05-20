@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using RimWorldModManager.Models;
 using RimWorldModManager.Utils;
 
@@ -17,7 +19,25 @@ namespace RimWorldModManager.Services
 
         public List<WorkshopModItem> ScanWorkshopMods()
         {
-            var workshopPath = PathHelper.GetWorkshopContentPath();
+            var settings = Config.SettingsManager.GetCurrent();
+            string steamCmdDir = null;
+            
+            if (!string.IsNullOrEmpty(settings.SteamCmdPath) && File.Exists(settings.SteamCmdPath))
+            {
+                steamCmdDir = Path.GetDirectoryName(settings.SteamCmdPath);
+            }
+            
+            if (string.IsNullOrEmpty(steamCmdDir))
+            {
+                steamCmdDir = Path.GetDirectoryName(PathHelper.GetSteamCmdExePath());
+            }
+            
+            if (string.IsNullOrEmpty(steamCmdDir))
+            {
+                steamCmdDir = Path.Combine(PathHelper.GetAppRoot(), "steamcmd");
+            }
+            
+            var workshopPath = Path.Combine(steamCmdDir, "steamapps", "workshop", "content", "294100");
             var result = new List<WorkshopModItem>();
 
             if (!Directory.Exists(workshopPath))
@@ -33,6 +53,7 @@ namespace RimWorldModManager.Services
 
                     var cachedName = ModCacheManager.GetDisplayName(_cache, workshopId);
                     var isImported = _cache.WorkshopCache.TryGetValue(workshopId, out var entry) && entry.IsImported;
+                    var dirInfo = new DirectoryInfo(dir);
 
                     result.Add(new WorkshopModItem
                     {
@@ -40,7 +61,8 @@ namespace RimWorldModManager.Services
                         DisplayName = cachedName,
                         SourcePath = dir,
                         IsImported = isImported,
-                        Selected = false
+                        Selected = false,
+                        LastModified = dirInfo.LastWriteTime
                     });
                 }
             }
@@ -83,6 +105,8 @@ namespace RimWorldModManager.Services
                         workshopSourceInfo = $"来自 Workshop #{foundId}";
                     }
 
+                    var dirInfo = new DirectoryInfo(dir);
+                    
                     result.Add(new LocalModItem
                     {
                         LocalFolderName = dirName,
@@ -92,7 +116,8 @@ namespace RimWorldModManager.Services
                         LocalPath = dir,
                         WorkshopId = workshopId,
                         WorkshopSourceInfo = workshopSourceInfo,
-                        Selected = false
+                        Selected = false,
+                        LastModified = dirInfo.LastWriteTime
                     });
                 }
             }
@@ -101,13 +126,32 @@ namespace RimWorldModManager.Services
         }
     }
 
-    public class WorkshopModItem
+    public class WorkshopModItem : INotifyPropertyChanged
     {
+        private bool _selected;
+
         public uint WorkshopId { get; set; }
         public string DisplayName { get; set; }
         public string SourcePath { get; set; }
         public bool IsImported { get; set; }
-        public bool Selected { get; set; }
+        public DateTime LastModified { get; set; }
+
+        public bool Selected
+        {
+            get => _selected;
+            set
+            {
+                _selected = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 
     public class LocalModItem
@@ -120,5 +164,6 @@ namespace RimWorldModManager.Services
         public uint? WorkshopId { get; set; }
         public string WorkshopSourceInfo { get; set; }
         public bool Selected { get; set; }
+        public DateTime LastModified { get; set; }
     }
 }

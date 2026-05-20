@@ -27,7 +27,8 @@ namespace RimWorldModManager
             _pathsChanged = false;
 
             _viewModel.SteamAccount = "anonymous";
-            _viewModel.SteamPassword = string.Empty;
+            _viewModel.SteamPassword = "anonymous";
+            SteamPasswordBox.Password = "anonymous";
         }
 
         private void BrowseSteamCmd_Click(object sender, RoutedEventArgs e)

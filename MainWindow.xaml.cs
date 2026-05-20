@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using RimWorldModManager.Models;
+using RimWorldModManager.Services;
 using RimWorldModManager.ViewModels;
+using RimWorldModManager.Utils;
 using Wpf.Ui.Controls;
 
 namespace RimWorldModManager
@@ -12,83 +13,79 @@ namespace RimWorldModManager
     public partial class MainWindow : FluentWindow
     {
         private readonly MainViewModel _viewModel;
+        private readonly ModCache _cache;
+        private readonly ModScannerService _scannerService;
+        private readonly SteamCmdService _steamService;
 
         public MainWindow()
         {
             InitializeComponent();
-            _viewModel = new MainViewModel();
+            _cache = ModCacheManager.LoadCache();
+            _scannerService = new ModScannerService(_cache);
+            _viewModel = new MainViewModel(_scannerService);
             DataContext = _viewModel;
+
+            var settings = Config.SettingsManager.Load();
+            _steamService = new SteamCmdService(settings.SteamCmdPath ?? PathHelper.GetSteamCmdExePath(), new ConsoleLogger());
+            _steamService.SetOutputCallback(OnSteamCmdOutput);
+            _steamService.LoginStatusChanged += OnLoginStatusChanged;
+
             Loaded += MainWindow_Loaded;
+            Closed += MainWindow_Closed;
+            LocalModsToggle.IsChecked = true;
         }
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            await _viewModel.RefreshModsAsync();
-        }
-
-        private async void DownloadButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (uint.TryParse(WorkshopIdTextBox.Text.Trim(), out uint workshopId))
+            _viewModel.StatusMessage = "正在初始化 SteamCMD...";
+            var success = await _steamService.StartAsync();
+            if (success && _steamService.IsLoggedIn)
             {
-                try
-                {
-                    await _viewModel.AddModAsync(workshopId);
-                    System.Windows.MessageBox.Show(_viewModel.StatusMessage, "提示", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
-                }
-                catch (Exception ex)
-                {
-                    System.Windows.MessageBox.Show($"下载失败: {ex.Message}", "错误", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-                }
+                _viewModel.StatusMessage = "SteamCMD 已连接";
             }
             else
             {
-                System.Windows.MessageBox.Show("请输入有效的 Workshop ID", "提示", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                _viewModel.StatusMessage = "SteamCMD 连接失败，请检查设置";
             }
+
+            await _viewModel.RefreshModsAsync();
         }
 
-        private async void UpdateButton_Click(object sender, RoutedEventArgs e)
+        private void MainWindow_Closed(object sender, EventArgs e)
         {
-            var selectedItems = ModsDataGrid.SelectedItems.Cast<ModInfo>().ToList();
-            if (selectedItems.Count == 0)
-            {
-                System.Windows.MessageBox.Show("请先选中要更新的 Mod", "提示", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
-                return;
-            }
-
-            foreach (var mod in selectedItems)
-            {
-                try
-                {
-                    await _viewModel.UpdateModAsync(mod.WorkshopId);
-                }
-                catch (Exception ex)
-                {
-                    System.Windows.MessageBox.Show($"更新 Mod {mod.Name} 失败: {ex.Message}", "错误", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-                }
-            }
-            System.Windows.MessageBox.Show(_viewModel.StatusMessage, "提示", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+            _steamService.Dispose();
         }
 
-        private async void UpdateAllButton_Click(object sender, RoutedEventArgs e)
+        private void OnSteamCmdOutput(string output)
         {
-            if (_viewModel.Mods.Count == 0)
+            Dispatcher.Invoke(() =>
             {
-                System.Windows.MessageBox.Show("没有已安装的 Mod", "提示", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
-                return;
-            }
+                _viewModel.SteamCmdOutput = output;
+            });
+        }
 
-            foreach (var mod in _viewModel.Mods)
+        private void OnLoginStatusChanged(bool isLoggedIn)
+        {
+            Dispatcher.Invoke(() =>
             {
-                try
-                {
-                    await _viewModel.UpdateModAsync(mod.WorkshopId);
-                }
-                catch (Exception ex)
-                {
-                    System.Windows.MessageBox.Show($"更新 Mod {mod.Name} 失败: {ex.Message}", "错误", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-                }
-            }
-            System.Windows.MessageBox.Show("所有 Mod 更新完成", "提示", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                _viewModel.StatusMessage = isLoggedIn ? "SteamCMD 已连接" : "SteamCMD 已断开";
+            });
+        }
+
+        private void LocalModsButton_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModel.CurrentViewMode = ModViewMode.LocalMods;
+            LocalModsToggle.IsChecked = true;
+            WorkshopModsToggle.IsChecked = false;
+            _viewModel.SelectedModDetail = new ModDetailViewModel();
+        }
+
+        private void WorkshopModsButton_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModel.CurrentViewMode = ModViewMode.WorkshopMods;
+            WorkshopModsToggle.IsChecked = true;
+            LocalModsToggle.IsChecked = false;
+            _viewModel.SelectedModDetail = new ModDetailViewModel();
         }
 
         private async void RefreshButton_Click(object sender, RoutedEventArgs e)
@@ -96,30 +93,245 @@ namespace RimWorldModManager
             await _viewModel.RefreshModsAsync();
         }
 
-        private async void SettingsButton_Click(object sender, RoutedEventArgs e)
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
             var settingsWindow = new SettingsWindow();
             settingsWindow.Owner = this;
             settingsWindow.ShowDialog();
+        }
 
-            if (settingsWindow.PathsChanged)
+        private void SelectAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModel.SelectAllWorkshopMods();
+        }
+
+        private void DeselectAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModel.DeselectAllWorkshopMods();
+        }
+
+        private async void ImportButton_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItems = _viewModel.WorkshopMods.Where(m => m.Selected).ToList();
+            
+            if (selectedItems.Count == 0)
             {
+                _viewModel.StatusMessage = "请先选中要导入的 Mod";
+                return;
+            }
+
+            _viewModel.IsLoading = true;
+            _viewModel.StatusMessage = "正在导入 Mod...";
+
+            try
+            {
+                var importService = new ModImportService(_cache);
+                var result = await System.Threading.Tasks.Task.Run(() => importService.ImportMods(selectedItems));
+
+                if (result.SuccessCount > 0 && result.FailureCount == 0)
+                {
+                    _viewModel.StatusMessage = $"{result.SuccessCount} 个 Mod 导入成功";
+                }
+                else if (result.SuccessCount > 0 && result.FailureCount > 0)
+                {
+                    _viewModel.StatusMessage = $"{result.SuccessCount} 个成功，{result.FailureCount} 个失败";
+                }
+                else if (result.FailureCount > 0)
+                {
+                    _viewModel.StatusMessage = $"{result.FailureCount} 个 Mod 导入失败";
+                }
+
                 await _viewModel.RefreshModsAsync();
             }
-        }
-
-        private void ModsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (_viewModel.SelectedMod != null)
+            catch (System.Exception ex)
             {
-                ModDetailPage.LoadMod(_viewModel.SelectedMod);
+                _viewModel.StatusMessage = $"导入失败: {ex.Message}";
+            }
+            finally
+            {
+                _viewModel.IsLoading = false;
             }
         }
 
-        private void ModDetailPage_BackRequested(object sender, RoutedEventArgs e)
+        private async void UpdateSelectedButton_Click(object sender, RoutedEventArgs e)
         {
-            _viewModel.ClearSelection();
-            ModsDataGrid.SelectedItem = null;
+            var selectedItems = _viewModel.WorkshopMods.Where(m => m.Selected).ToList();
+            
+            if (selectedItems.Count == 0)
+            {
+                _viewModel.StatusMessage = "请先选中要更新的 Mod";
+                return;
+            }
+
+            _viewModel.IsLoading = true;
+            _viewModel.StatusMessage = $"正在更新 {selectedItems.Count} 个 Mod...";
+
+            int successCount = 0;
+            int failureCount = 0;
+
+            try
+            {
+                foreach (var item in selectedItems)
+                {
+                    _viewModel.StatusMessage = $"正在更新 Mod {item.WorkshopId}...";
+                    
+                    var result = await _steamService.DownloadModAsync(item.WorkshopId);
+
+                    if (result.ExitCode == 0 && !result.TimedOut)
+                    {
+                        successCount++;
+                    }
+                    else
+                    {
+                        failureCount++;
+                    }
+                }
+
+                if (successCount > 0 && failureCount == 0)
+                {
+                    _viewModel.StatusMessage = $"{successCount} 个 Mod 更新成功";
+                }
+                else if (successCount > 0 && failureCount > 0)
+                {
+                    _viewModel.StatusMessage = $"{successCount} 个成功，{failureCount} 个失败";
+                }
+                else if (failureCount > 0)
+                {
+                    _viewModel.StatusMessage = $"{failureCount} 个 Mod 更新失败";
+                }
+
+                await _viewModel.RefreshModsAsync();
+            }
+            catch (System.Exception ex)
+            {
+                _viewModel.StatusMessage = $"更新失败: {ex.Message}";
+            }
+            finally
+            {
+                _viewModel.IsLoading = false;
+            }
+        }
+
+        private async void DownloadButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!uint.TryParse(WorkshopIdTextBox.Text, out uint workshopId))
+            {
+                _viewModel.StatusMessage = "请输入有效的 Workshop ID";
+                return;
+            }
+
+            _viewModel.IsLoading = true;
+            _viewModel.StatusMessage = $"正在下载 Mod {workshopId}...";
+
+            try
+            {
+                var result = await _steamService.DownloadModAsync(workshopId);
+
+                if (result.ExitCode == 0 && !result.TimedOut)
+                {
+                    _viewModel.StatusMessage = $"Mod {workshopId} 下载完成";
+                    await _viewModel.RefreshModsAsync();
+                }
+                else
+                {
+                    var errorMsg = result.TimedOut ? "下载超时" : 
+                        (string.IsNullOrEmpty(result.StandardError) ? "下载失败" : result.StandardError);
+                    _viewModel.StatusMessage = $"下载失败: {errorMsg}";
+                }
+            }
+            catch (Exception ex)
+            {
+                _viewModel.StatusMessage = $"下载异常: {ex.Message}";
+            }
+            finally
+            {
+                _viewModel.IsLoading = false;
+            }
+        }
+
+        private void LocalModsList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (LocalModsList.SelectedItem is LocalModItem item)
+            {
+                var modInfo = ModParser.ParseFromDirectory(item.LocalPath);
+                _viewModel.SelectedModDetail = new ModDetailViewModel
+                {
+                    Name = item.DisplayName,
+                    Author = item.Author,
+                    Version = item.Version,
+                    WorkshopId = item.WorkshopId?.ToString() ?? string.Empty,
+                    Description = modInfo?.Description ?? string.Empty,
+                    TagsString = modInfo?.Tags != null ? string.Join(", ", modInfo.Tags) : string.Empty,
+                    LocalPath = item.LocalPath,
+                    PreviewImagePath = modInfo?.PreviewImagePath ?? string.Empty
+                };
+            }
+        }
+
+        private void WorkshopModsList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (WorkshopModsList.SelectedItem is WorkshopModItem item)
+            {
+                var modInfo = ModParser.ParseFromDirectory(item.SourcePath);
+                _viewModel.SelectedModDetail = new ModDetailViewModel
+                {
+                    Name = item.DisplayName,
+                    Author = modInfo?.Author ?? string.Empty,
+                    Version = modInfo?.Version ?? string.Empty,
+                    WorkshopId = item.WorkshopId.ToString(),
+                    Description = modInfo?.Description ?? string.Empty,
+                    TagsString = modInfo?.Tags != null ? string.Join(", ", modInfo.Tags) : string.Empty,
+                    LocalPath = item.SourcePath,
+                    PreviewImagePath = modInfo?.PreviewImagePath ?? string.Empty
+                };
+            }
+        }
+
+        private void OpenFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            string pathToOpen = null;
+
+            if (!string.IsNullOrEmpty(_viewModel.SelectedModDetail.LocalPath) && 
+                System.IO.Directory.Exists(_viewModel.SelectedModDetail.LocalPath))
+            {
+                pathToOpen = _viewModel.SelectedModDetail.LocalPath;
+            }
+            else
+            {
+                var settings = Config.SettingsManager.Load();
+                var localModsPath = settings.ModDirectories.FirstOrDefault();
+                if (string.IsNullOrEmpty(localModsPath))
+                {
+                    localModsPath = PathHelper.GetDefaultModsPath();
+                }
+                
+                if (System.IO.Directory.Exists(localModsPath))
+                {
+                    pathToOpen = localModsPath;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(pathToOpen))
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = pathToOpen,
+                    UseShellExecute = true
+                });
+            }
+        }
+
+        private void OpenWorkshopButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(_viewModel.SelectedModDetail.WorkshopId) &&
+                uint.TryParse(_viewModel.SelectedModDetail.WorkshopId, out uint workshopId))
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = $"https://steamcommunity.com/workshop/filedetails/?id={workshopId}",
+                    UseShellExecute = true
+                });
+            }
         }
     }
 }

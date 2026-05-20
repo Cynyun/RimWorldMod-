@@ -7,10 +7,11 @@
                  xmlns:local="clr-namespace:RimWorldModManager"
                  xmlns:views="clr-namespace:RimWorldModManager.Views"
                  mc:Ignorable="d"
-                 Title="RimWorld Mod 管理器" Height="600" Width="1000"
+                 Title="RimWorld Mod 管理器" Height="600" Width="1050"
                  WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
@@ -18,7 +19,39 @@
 
         <ui:TitleBar Grid.Row="0" Title="RimWorld Mod 管理器" />
 
-        <Grid Grid.Row="1" Margin="16">
+        <DockPanel Grid.Row="1" Margin="16">
+            <ToggleButton x:Name="LocalModsToggle" Content="游戏 Mods" 
+                             Click="LocalModsButton_Click"
+                             Margin="0,0,8,0" 
+                             Padding="12,6"
+                             Width="100"/>
+            <ToggleButton x:Name="WorkshopModsToggle" Content="Workshop" 
+                             Click="WorkshopModsButton_Click"
+                             Margin="0,0,8,0" 
+                             Padding="12,6"
+                             Width="100"/>
+            <Separator Width="1" Background="Gray" Margin="8,0" />
+            
+            <ui:TextBox x:Name="WorkshopIdTextBox" 
+                        PlaceholderText="输入 Workshop ID"
+                        Width="150"
+                        Margin="0,0,8,0" />
+            <ui:Button x:Name="DownloadButton" 
+                       Content="下载 Mod"
+                       Click="DownloadButton_Click" 
+                       Margin="0,0,8,0" />
+            <Separator Width="1" Background="Gray" Margin="8,0" />
+            
+            <ui:TextBox x:Name="SearchTextBox"
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                     PlaceholderText="搜索 Mod..."
+                     Width="200"
+                     Margin="8,0,8,0"/>
+            <ui:Button Content="刷新" Click="RefreshButton_Click" Margin="0,0,8,0" />
+            <ui:Button Content="设置" Click="SettingsButton_Click" />
+        </DockPanel>
+
+        <Grid Grid.Row="2" Margin="16">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="350" />
@@ -28,106 +61,131 @@
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <Grid Grid.Row="0" Margin="12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-
-                        <ui:TextBox Grid.Column="0" 
-                                    x:Name="WorkshopIdTextBox" 
-                                    PlaceholderText="输入 Workshop ID"
-                                    Margin="0,0,8,0" />
-
-                        <ui:Button Grid.Column="1" 
-                                   x:Name="DownloadButton" 
-                                   Content="下载 Mod"
-                                   Click="DownloadButton_Click" />
-                    </Grid>
-
-                    <Grid Grid.Row="1" Margin="12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="200" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-
-                        <ui:TextBox Grid.Column="0" 
-                                    x:Name="SearchTextBox"
-                                    Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                                    PlaceholderText="搜索 Mod..."
-                                    Margin="0,0,8,0" />
-
-                        <ui:Button Grid.Column="1" 
-                                   x:Name="UpdateButton" 
-                                   Content="更新选中"
-                                   Click="UpdateButton_Click"
+                    <DockPanel Grid.Row="0" Margin="12" VerticalAlignment="Center">
+                        <ui:Button Content="全选" Click="SelectAllButton_Click" 
+                                   Visibility="{Binding IsWorkshopModsView, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                    Margin="0,0,8,0" />
-
-                        <ui:Button Grid.Column="2" 
-                                   x:Name="UpdateAllButton" 
-                                   Content="更新全部"
-                                   Click="UpdateAllButton_Click"
+                        <ui:Button Content="取消全选" Click="DeselectAllButton_Click" 
+                                   Visibility="{Binding IsWorkshopModsView, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                    Margin="0,0,8,0" />
-
-                        <ui:Button Grid.Column="3" 
-                                   x:Name="RefreshButton" 
-                                   Content="刷新"
-                                   Click="RefreshButton_Click"
+                        <ui:Button Content="导入选中到游戏" 
+                                   Click="ImportButton_Click" 
+                                   Visibility="{Binding IsWorkshopModsView, Converter={StaticResource BooleanToVisibilityConverter}}" 
                                    Margin="0,0,8,0" />
+                        <ui:Button Content="更新选中" 
+                                   Click="UpdateSelectedButton_Click" 
+                                   Visibility="{Binding IsWorkshopModsView, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                                   Margin="0,0,8,0" />
+                        <Separator Width="1" Background="Gray" Margin="8,0" Visibility="{Binding IsWorkshopModsView, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        <ui:Button x:Name="OpenFolderButton" Content="打开文件夹" Click="OpenFolderButton_Click" />
+                        <ui:Button x:Name="OpenWorkshopButton" Content="打开 Workshop" 
+                                   Click="OpenWorkshopButton_Click" 
+                                   Visibility="{Binding SelectedModDetail.HasWorkshopId, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                                   Margin="8,0,0,0" />
+                    </DockPanel>
 
-                        <ui:Button Grid.Column="4" 
-                                   x:Name="SettingsButton" 
-                                   Content="设置" 
-                                   Click="SettingsButton_Click" />
-                    </Grid>
+                    <ScrollViewer Grid.Row="1" Margin="12" VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <ListBox x:Name="LocalModsList"
+                                     ItemsSource="{Binding LocalMods}"
+                                     Visibility="{Binding IsLocalModsView, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                     Margin="0,0,0,8"
+                                     SelectionMode="Single"
+                                     SelectionChanged="LocalModsList_SelectionChanged">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0" Text="{Binding DisplayName}" FontWeight="Bold" />
+                                            <TextBlock Grid.Column="1" Text="{Binding WorkshopSourceInfo}" Foreground="Gray" FontSize="12" Margin="0,0,8,0" />
+                                            <TextBlock Grid.Column="2" Text="{Binding LastModified, StringFormat=\{0:yyyy-MM-dd HH:mm\}}" Foreground="Gray" FontSize="12" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
 
-                    <ScrollViewer Grid.Row="2" Margin="12" VerticalScrollBarVisibility="Auto">
-                        <ui:DataGrid x:Name="ModsDataGrid"
-                                     ItemsSource="{Binding Mods}"
-                                     SelectedItem="{Binding SelectedMod}"
-                                     AutoGenerateColumns="False"
-                                     CanUserAddRows="False"
-                                     CanUserDeleteRows="False"
-                                     SelectionChanged="ModsDataGrid_SelectionChanged"
-                                     HorizontalAlignment="Stretch"
-                                     HorizontalContentAlignment="Stretch">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Workshop ID" 
-                                                       Binding="{Binding WorkshopId}" 
-                                                       Width="120" />
-                                <DataGridTextColumn Header="Mod 名称" 
-                                                       Binding="{Binding Name}" 
-                                                       Width="*" />
-                                <DataGridTextColumn Header="最后更新" 
-                                                       Binding="{Binding LastUpdated, StringFormat='yyyy-MM-dd'}" 
-                                                       Width="130" />
-                            </DataGrid.Columns>
-                        </ui:DataGrid>
+                            <ListBox x:Name="WorkshopModsList"
+                                     ItemsSource="{Binding WorkshopMods}"
+                                     Visibility="{Binding IsWorkshopModsView, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                     SelectionMode="Single"
+                                     SelectionChanged="WorkshopModsList_SelectionChanged">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <CheckBox Grid.Column="0" IsChecked="{Binding Selected}" Margin="0,0,8,0" />
+                                            <TextBlock Grid.Column="1" Text="{Binding DisplayName}" FontWeight="Bold" />
+                                            <TextBlock Grid.Column="2" Text="{Binding WorkshopId, StringFormat='ID: {0}'}" Foreground="Gray" FontSize="12" Margin="8,0" />
+                                            <TextBlock Grid.Column="3" Text="已导入" 
+                                                       Foreground="Green" FontSize="12"
+                                                       Visibility="{Binding IsImported, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                            <TextBlock Grid.Column="4" Text="{Binding LastModified, StringFormat=\{0:yyyy-MM-dd HH:mm\}}" Foreground="Gray" FontSize="12" Margin="8,0" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
                     </ScrollViewer>
                 </Grid>
             </ui:Card>
 
-            <ui:Card Grid.Column="1" Margin="16,0,0,0" Height="Auto">
-                <ScrollViewer Margin="12" VerticalScrollBarVisibility="Auto" Height="Auto">
-                    <views:ModDetailPage 
-                        x:Name="ModDetailPage" 
-                        BackRequested="ModDetailPage_BackRequested" 
-                        Height="Auto" />
+            <ui:Card Grid.Column="1" Margin="16,0,0,0">
+                <ScrollViewer Margin="12" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="Mod 详情" FontSize="16" FontWeight="Bold" Margin="0,0,0,12" />
+                        
+                        <Border Width="280" BorderThickness="1" BorderBrush="Gray" Background="#2a2a2a" CornerRadius="4" Margin="0,0,0,12" ClipToBounds="True">
+                            <Grid>
+                                <Image Source="{Binding SelectedModDetail.PreviewImagePath}" 
+                                       Stretch="Uniform" 
+                                       Visibility="{Binding SelectedModDetail.HasPreviewImage, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                <TextBlock Text="暂无预览图片" 
+                                           HorizontalAlignment="Center" 
+                                           VerticalAlignment="Center" 
+                                           Foreground="Gray"
+                                           Visibility="{Binding SelectedModDetail.HasPreviewImage, Converter={StaticResource BooleanToInverseVisibilityConverter}}" />
+                            </Grid>
+                        </Border>
+                        
+                        <TextBlock Text="名称:" Foreground="Gray" Margin="0,0,0,4" />
+                        <TextBlock x:Name="DetailName" Text="{Binding SelectedModDetail.Name}" FontWeight="Bold" Margin="0,0,0,8" />
+                        
+                        <TextBlock Text="作者:" Foreground="Gray" Margin="0,0,0,4" />
+                        <TextBlock x:Name="DetailAuthor" Text="{Binding SelectedModDetail.Author}" Margin="0,0,0,8" />
+                        
+                        <TextBlock Text="版本:" Foreground="Gray" Margin="0,0,0,4" />
+                        <TextBlock x:Name="DetailVersion" Text="{Binding SelectedModDetail.Version}" Margin="0,0,0,8" />
+                        
+                        <TextBlock Text="Workshop ID:" Foreground="Gray" Margin="0,0,0,4" />
+                        <TextBlock x:Name="DetailWorkshopId" Text="{Binding SelectedModDetail.WorkshopId}" Margin="0,0,0,8" />
+                        
+                        <TextBlock Text="描述:" Foreground="Gray" Margin="0,0,0,4" />
+                        <TextBlock x:Name="DetailDescription" Text="{Binding SelectedModDetail.Description}" TextWrapping="Wrap" Margin="0,0,0,8" />
+                        
+                        <TextBlock Text="标签:" Foreground="Gray" Margin="0,0,0,4" />
+                        <TextBlock x:Name="DetailTags" Text="{Binding SelectedModDetail.TagsString}" Margin="0,0,0,12" />
+                        
+
+                    </StackPanel>
                 </ScrollViewer>
             </ui:Card>
         </Grid>
 
-        <TextBlock Grid.Row="2" 
-                   Text="{Binding StatusMessage}" 
-                   Margin="16,8,0,8" 
-                   FontSize="12" />
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="16,8,0,8">
+            <TextBlock Text="{Binding StatusMessage}" FontSize="12" />
+        </StackPanel>
     </Grid>
 </ui:FluentWindow>
