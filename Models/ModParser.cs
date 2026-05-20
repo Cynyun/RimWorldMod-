@@ -179,6 +179,45 @@ namespace RimWorldModManager.Models
             }
         }
 
+        public static string GetModDisplayName(string modDir)
+        {
+            if (!Directory.Exists(modDir))
+                return null;
+
+            var modInfoXmlPath = Path.Combine(modDir, "mod_info.xml");
+            var aboutXmlPath = Path.Combine(modDir, "About", "About.xml");
+
+            if (File.Exists(modInfoXmlPath))
+            {
+                return ParseDisplayNameFromXml(modInfoXmlPath);
+            }
+            else if (File.Exists(aboutXmlPath))
+            {
+                return ParseDisplayNameFromXml(aboutXmlPath);
+            }
+
+            return null;
+        }
+
+        private static string ParseDisplayNameFromXml(string xmlPath)
+        {
+            try
+            {
+                using var reader = XmlReader.Create(xmlPath);
+                while (reader.Read())
+                {
+                    if (reader.NodeType == XmlNodeType.Element && reader.LocalName == "name")
+                    {
+                        return reader.ReadElementContentAsString();
+                    }
+                }
+            }
+            catch
+            {
+            }
+            return null;
+        }
+
         public static ModInfo ParseFromWorkshopId(uint workshopId, string baseModsPath)
         {
             var modDir = Path.Combine(baseModsPath, "steamapps", "workshop", "content", "294100", workshopId.ToString());
