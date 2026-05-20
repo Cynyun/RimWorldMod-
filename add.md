@@ -72,7 +72,7 @@
 
 ## 📦 发布与工程约束
 
-- 所有新增 UI 必须使用 **WPF-UI 控件**，禁止使用 `System.Windows.Controls` 原生控件
+- 所有新增 UI 必须使用 **WPF-UI 控件**，尽可能不使用 `System.Windows.Controls` 原生控件
 - 新增代码应尽量**解耦**，避免侵入现有模块
 - 项目仍通过 **Visual Studio 发布**（ClickOnce / MSIX），确保新增文件（如缓存 JSON）不会被误打包进安装目录只读区
 - 新增功能应可独立测试，不影响原有功能流程
