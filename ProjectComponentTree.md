@@ -14,6 +14,7 @@
 | 语言 | C# |
 | 根命名空间 | RimWorldModManager |
 | 程序集名称 | RimWorldModManager |
+| 应用图标 | rimworld.ico |
 
 ---
 
@@ -32,18 +33,24 @@
 | 文件 | 描述 |
 |------|------|
 | [MainWindow.xaml](MainWindow.xaml) | 主窗口 UI，使用 FluentWindow |
-| [MainWindow.xaml.cs](MainWindow.xaml.cs) | 主窗口后台代码，处理 Mod 选择和 SteamCMD 操作 |
-
-### 3. 设置窗口
-
-| 文件 | 描述 |
-|------|------|
-| [SettingsWindow.xaml](SettingsWindow.xaml) | 设置窗口 UI |
-| [SettingsWindow.xaml.cs](SettingsWindow.xaml.cs) | 设置窗口后台代码 |
+| [MainWindow.xaml.cs](MainWindow.xaml.cs) | 主窗口后台代码，处理 Mod 选择、导入和冲突处理 |
 
 ---
 
 ## 视图层 (Views)
+
+### 对话框窗口
+
+| 文件 | 描述 |
+|------|------|
+| [Views/SettingsWindow.xaml](Views/SettingsWindow.xaml) | 设置窗口 UI |
+| [Views/SettingsWindow.xaml.cs](Views/SettingsWindow.xaml.cs) | 设置窗口后台代码 |
+| [Views/FileConflictDialog.xaml](Views/FileConflictDialog.xaml) | 单冲突处理对话框（替换/保留/跳过） |
+| [Views/FileConflictDialog.xaml.cs](Views/FileConflictDialog.xaml.cs) | 单冲突对话框后台代码 |
+| [Views/BatchImportOptionsDialog.xaml](Views/BatchImportOptionsDialog.xaml) | 批量导入选项对话框（多冲突处理） |
+| [Views/BatchImportOptionsDialog.xaml.cs](Views/BatchImportOptionsDialog.xaml.cs) | 批量导入对话框后台代码 |
+
+### 用户控件
 
 | 文件 | 描述 |
 |------|------|
@@ -78,7 +85,7 @@
 |------|------|
 | [Services/SteamCmdService.cs](Services/SteamCmdService.cs) | SteamCMD 进程封装服务，支持持久连接和心跳检测 |
 | [Services/ModScannerService.cs](Services/ModScannerService.cs) | Mod 扫描服务，扫描本地和 Workshop Mod 目录 |
-| [Services/ModImportService.cs](Services/ModImportService.cs) | Mod 导入服务，处理从 Workshop 导入到游戏目录 |
+| [Services/ModImportService.cs](Services/ModImportService.cs) | Mod 导入服务，包含 DetectConflicts() 冲突检测方法 |
 | [Services/ModCacheManager.cs](Services/ModCacheManager.cs) | Mod 缓存管理服务 |
 
 ---
@@ -115,10 +122,10 @@
 
 | 文件 | 描述 |
 |------|------|
-| [RimWorldModsManage.csproj](RimWorldModsManage.csproj) | 主项目文件 |
+| [RimWorldModsManage.csproj](RimWorldModsManage.csproj) | 主项目文件（包含 ApplicationIcon 设置） |
 | [.gitignore](.gitignore) | Git 忽略配置 |
 | [README.md](README.md) | 项目说明文档 |
-| [add.md](add.md) | 附加文档 |
+| [ProjectComponentTree.md](ProjectComponentTree.md) | 项目组件树文档 |
 
 ---
 
@@ -147,6 +154,7 @@
 | steamcmd/ | SteamCMD 客户端 (需从 Valve 官网下载) |
 | mods/ | Mod 下载存储目录 |
 | config/*.json | 用户配置文件 (运行时生成) |
+| rimworld.ico | 应用图标 (需手动添加到项目) |
 
 ---
 
@@ -156,11 +164,10 @@
 WpfApp1/
 ├── App.xaml / App.xaml.cs
 ├── MainWindow.xaml / MainWindow.xaml.cs
-├── SettingsWindow.xaml / SettingsWindow.xaml.cs
+├── rimworld.ico                     # 应用程序图标
 ├── AssemblyInfo.cs
 ├── ProjectComponentTree.md
 ├── README.md
-├── add.md
 ├── Converters/
 │   ├── InvertBooleanToVisibilityConverter.cs
 │   ├── NullImageConverter.cs
@@ -182,8 +189,10 @@ WpfApp1/
 │   ├── ModDetailViewModel.cs
 │   └── SettingsViewModel.cs
 ├── Views/
-│   ├── ModDetailPage.xaml
-│   └── ModDetailPage.xaml.cs
+│   ├── ModDetailPage.xaml / .cs
+│   ├── SettingsWindow.xaml / .cs
+│   ├── FileConflictDialog.xaml / .cs
+│   └── BatchImportOptionsDialog.xaml / .cs
 ├── config/
 │   ├── Settings.cs
 │   └── SettingsManager.cs
@@ -215,11 +224,16 @@ MainWindow.xaml.cs
 │   ├── ModScannerService.cs
 │   │   └── ModParser.cs
 │   └── SteamCmdService.cs
-└── ModDetailPage.xaml.cs
-    └── ModDetailViewModel.cs
-        └── ModInfo.cs
+├── Views/ModDetailPage.xaml.cs
+│   └── ModDetailViewModel.cs
+│       └── ModInfo.cs
+├── Views/FileConflictDialog.xaml.cs     # 单冲突处理对话框
+├── Views/BatchImportOptionsDialog.xaml.cs # 批量导入对话框
+└── ModImportService.cs
+    ├── ModInfo.cs
+    └── ModParser.cs
 
-SettingsWindow.xaml.cs
+SettingsWindow.xaml.cs (Views/SettingsWindow.xaml.cs)
 └── SettingsViewModel.cs
     └── SettingsManager.cs
         └── Settings.cs
@@ -232,10 +246,41 @@ SteamCmdService.cs
 ├── SettingsManager.cs
 └── Logger.cs
 
-ModImportService.cs
-├── ModInfo.cs
-└── ModParser.cs
-
 ModCacheManager.cs
 └── ModCache.cs
 ```
+
+---
+
+## 冲突处理架构
+
+### 冲突检测流程
+
+```
+用户点击"导入到游戏"
+        ↓
+MainWindow.xaml.cs
+        ↓
+ModImportService.DetectConflicts(selectedItems)
+        ↓
+    ┌────────────────────────────────────┐
+    │ 返回 List<ConflictInfo>             │
+    │ 包含冲突的 Mod 项和目标路径信息      │
+    └────────────────────────────────────┘
+        ↓
+    ┌────────────────────────────────────┐
+    │ 冲突数量判断                        │
+    │ - 0: 无冲突 → 直接导入              │
+    │ - 1: 单冲突 → FileConflictDialog   │
+    │ - >1: 多冲突 → BatchImportDialog   │
+    └────────────────────────────────────┘
+```
+
+### 相关类
+
+| 类 | 命名空间 | 描述 |
+|-----|----------|------|
+| FileConflictAction | RimWorldModManager.Services | 冲突处理操作枚举 |
+| ConflictInfo | RimWorldModManager.Services | 冲突信息数据结构 |
+| FileConflictDialog | RimWorldModManager.Views | 单冲突处理对话框 |
+| BatchImportOptionsDialog | RimWorldModManager.Views | 批量导入选项对话框 |
