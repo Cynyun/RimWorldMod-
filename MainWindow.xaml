@@ -7,7 +7,7 @@
                  xmlns:local="clr-namespace:RimWorldModManager"
                  xmlns:views="clr-namespace:RimWorldModManager.Views"
                   mc:Ignorable="d"
-                 Title="RimWorld Mod 管理器" Height="750" Width="1250"
+                 Title="RimWorld Mod 管理器" Height="750" Width="1280"
                  WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>

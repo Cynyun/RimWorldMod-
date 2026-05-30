@@ -272,20 +272,27 @@ namespace RimWorldModManager
                     }
                 }
 
+                string updateResultMessage;
                 if (successCount > 0 && failureCount == 0)
                 {
-                    _viewModel.StatusMessage = $"{successCount} 个 Mod 更新成功";
+                    updateResultMessage = $"{successCount} 个 Mod 更新成功";
                 }
                 else if (successCount > 0 && failureCount > 0)
                 {
-                    _viewModel.StatusMessage = $"{successCount} 个成功，{failureCount} 个失败";
+                    updateResultMessage = $"{successCount} 个成功，{failureCount} 个失败";
                 }
-                else if (failureCount > 0)
+                else
                 {
-                    _viewModel.StatusMessage = $"{failureCount} 个 Mod 更新失败";
+                    updateResultMessage = $"{failureCount} 个 Mod 更新失败";
                 }
 
+                _viewModel.StatusMessage = updateResultMessage;
+                await Task.Delay(1500);
+
+                _viewModel.StatusMessage = "更新完成，正在刷新 Mod 列表...";
                 await _viewModel.RefreshModsAsync();
+
+                _viewModel.StatusMessage = $"{updateResultMessage} - 已刷新 Mod 列表";
             }
             catch (System.Exception ex)
             {
