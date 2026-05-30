@@ -4,7 +4,7 @@ using System.IO;
 using System.Windows;
 using Wpf.Ui.Controls;
 
-namespace RimWorldModManager
+namespace RimWorldModManager.Views
 {
     public partial class SettingsWindow : FluentWindow
     {

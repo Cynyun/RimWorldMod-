@@ -2,17 +2,23 @@ using RimWorldModManager.Services;
 using System.Windows;
 using Wpf.Ui.Controls;
 
-namespace RimWorldModManager
+namespace RimWorldModManager.Views
 {
     public partial class BatchImportOptionsDialog : FluentWindow
     {
         public FileConflictAction SelectedAction { get; private set; }
         public bool AskForEachConflict { get; private set; } = true;
 
-        public BatchImportOptionsDialog(int totalCount)
+        public BatchImportOptionsDialog(int totalCount, int conflictCount = 0)
         {
             InitializeComponent();
             ModCountText.Text = $"您选择了 {totalCount} 个 Mod 进行导入。";
+
+            if (conflictCount > 0)
+            {
+                ConflictCountText.Text = $"检测到 {conflictCount} 个同名 Mod，将产生冲突。";
+                ConflictCountText.Visibility = Visibility.Visible;
+            }
         }
 
         private void StartButton_Click(object sender, RoutedEventArgs e)

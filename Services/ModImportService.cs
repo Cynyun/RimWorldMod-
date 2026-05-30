@@ -26,6 +26,35 @@ namespace RimWorldModManager.Services
             _applyAllAction = !askForEach;
         }
 
+        public List<ConflictInfo> DetectConflicts(IEnumerable<WorkshopModItem> items)
+        {
+            var conflicts = new List<ConflictInfo>();
+
+            foreach (var item in items)
+            {
+                if (string.IsNullOrEmpty(item.SourcePath) || !Directory.Exists(item.SourcePath))
+                    continue;
+
+                if (string.IsNullOrEmpty(item.DisplayName))
+                    continue;
+
+                var cleanName = SanitizeFolderName(item.DisplayName);
+                var destPath = GetDestinationPath(cleanName);
+
+                if (Directory.Exists(destPath))
+                {
+                    conflicts.Add(new ConflictInfo
+                    {
+                        ModItem = item,
+                        CleanName = cleanName,
+                        DestinationPath = destPath
+                    });
+                }
+            }
+
+            return conflicts;
+        }
+
         public ImportResult ImportMods(IEnumerable<WorkshopModItem> items, 
             Func<string, FileConflictAction> conflictHandler = null)
         {
@@ -194,5 +223,12 @@ namespace RimWorldModManager.Services
         public List<string> SuccessMessages { get; } = new();
         public List<string> FailureMessages { get; } = new();
         public List<string> SkippedMessages { get; } = new();
+    }
+
+    public class ConflictInfo
+    {
+        public WorkshopModItem ModItem { get; set; } = null!;
+        public string CleanName { get; set; } = string.Empty;
+        public string DestinationPath { get; set; } = string.Empty;
     }
 }

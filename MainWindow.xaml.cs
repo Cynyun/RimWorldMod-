@@ -2,6 +2,7 @@ using RimWorldModManager.Models;
 using RimWorldModManager.Services;
 using RimWorldModManager.Utils;
 using RimWorldModManager.ViewModels;
+using RimWorldModManager.Views;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
@@ -119,25 +120,58 @@ namespace RimWorldModManager
                 return;
             }
 
-            FileConflictAction selectedAction = FileConflictAction.Replace;
-            bool askForEach = true;
-
-            var batchDialog = new BatchImportOptionsDialog(selectedItems.Count);
-            batchDialog.Owner = this;
-            if (batchDialog.ShowDialog() != true)
-            {
-                return;
-            }
-
-            selectedAction = batchDialog.SelectedAction;
-            askForEach = batchDialog.AskForEachConflict;
-
             _viewModel.IsLoading = true;
-            _viewModel.StatusMessage = "正在导入 Mod...";
+            _viewModel.StatusMessage = "正在检测冲突...";
 
             try
             {
                 var importService = new ModImportService(_cache);
+                var conflicts = importService.DetectConflicts(selectedItems);
+
+                FileConflictAction selectedAction = FileConflictAction.Replace;
+                bool askForEach = true;
+
+                if (conflicts.Count == 0)
+                {
+                    askForEach = false;
+                    selectedAction = FileConflictAction.Replace;
+                }
+                else if (conflicts.Count == 1)
+                {
+                    var dialog = new FileConflictDialog(conflicts[0].ModItem.DisplayName);
+                    dialog.Owner = this;
+                    if (dialog.ShowDialog() == true)
+                    {
+                        selectedAction = dialog.SelectedAction;
+                        if (dialog.ApplyToAll)
+                        {
+                            askForEach = false;
+                        }
+                    }
+                    else
+                    {
+                        _viewModel.IsLoading = false;
+                        _viewModel.StatusMessage = "导入已取消";
+                        return;
+                    }
+                }
+                else
+                {
+                    var batchDialog = new BatchImportOptionsDialog(selectedItems.Count, conflicts.Count);
+                    batchDialog.Owner = this;
+                    if (batchDialog.ShowDialog() != true)
+                    {
+                        _viewModel.IsLoading = false;
+                        _viewModel.StatusMessage = "导入已取消";
+                        return;
+                    }
+
+                    selectedAction = batchDialog.SelectedAction;
+                    askForEach = batchDialog.AskForEachConflict;
+                }
+
+                _viewModel.StatusMessage = "正在导入 Mod...";
+
                 importService.SetBatchImportOptions(selectedAction, askForEach);
 
                 Func<string, FileConflictAction> conflictHandler = null;

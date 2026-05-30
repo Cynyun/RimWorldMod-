@@ -2,7 +2,7 @@ using RimWorldModManager.Services;
 using System.Windows;
 using Wpf.Ui.Controls;
 
-namespace RimWorldModManager
+namespace RimWorldModManager.Views
 {
     public partial class FileConflictDialog : FluentWindow
     {

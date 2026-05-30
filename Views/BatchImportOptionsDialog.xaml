@@ -1,11 +1,11 @@
-<ui:FluentWindow x:Class="RimWorldModManager.BatchImportOptionsDialog"
+<ui:FluentWindow x:Class="RimWorldModManager.Views.BatchImportOptionsDialog"
                  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                  mc:Ignorable="d"
-                 Title="批量导入选项" Height="450" Width="520"
+                 Title="批量导入选项" Height="550" Width="520"
                  WindowStartupLocation="CenterOwner"
                  MouseDown="FluentWindow_MouseDown">
     <Grid Margin="24">
@@ -19,23 +19,24 @@
         <StackPanel Grid.Row="0">
             <TextBlock Text="批量导入设置" FontSize="20" FontWeight="Bold" Margin="0,0,0,8" />
             <TextBlock x:Name="ModCountText" TextWrapping="Wrap" Margin="0,0,0,8" FontSize="14" />
+            <TextBlock x:Name="ConflictCountText" TextWrapping="Wrap" Margin="0,0,0,8" FontSize="14" Foreground="#F6213C" Visibility="Collapsed" />
         </StackPanel>
 
-        <Separator Grid.Row="1" Margin="0,16" />
+        <Separator Grid.Row="1" Margin="0, 4" />
 
         <StackPanel Grid.Row="2">
-            <TextBlock Text="遇到同名 Mod 时的处理方式：" FontWeight="SemiBold" Margin="0,0,0,16" FontSize="14" />
+            <TextBlock Text="之后遇到同名 Mod 时的处理方式：" FontWeight="SemiBold" Margin="0,0,0,8" FontSize="14" />
             
             <Border Background="{DynamicResource ControlFillColorDefaultBrush}" 
                     CornerRadius="4" 
-                    Padding="16" 
-                    Margin="0,0,0,12">
+                    Padding="12" 
+                    Margin="0,0,0,8">
                 <StackPanel>
                     <RadioButton x:Name="AskEachRadio" 
                                  Content="逐个询问" 
                                  IsChecked="True" 
                                  FontSize="14"
-                                 Margin="0,0,0,8"/>
+                                 Margin="0,0,0,4"/>
                     <TextBlock Text="对每个重名 Mod 逐一询问处理方式" 
                                Foreground="Gray" 
                                Margin="24,0,0,0"
@@ -45,8 +46,8 @@
 
             <Border Background="{DynamicResource ControlFillColorDefaultBrush}" 
                     CornerRadius="4" 
-                    Padding="16" 
-                    Margin="0,0,0,12">
+                    Padding="12" 
+                    Margin="0,0,0,8">
                 <StackPanel>
                     <RadioButton x:Name="ReplaceAllRadio" 
                                  Content="全部替换" 
@@ -61,8 +62,8 @@
 
             <Border Background="{DynamicResource ControlFillColorDefaultBrush}" 
                     CornerRadius="4" 
-                    Padding="16" 
-                    Margin="0,0,0,12">
+                    Padding="12" 
+                    Margin="0,0,0,8">
                 <StackPanel>
                     <RadioButton x:Name="KeepBothAllRadio" 
                                  Content="全部保留" 
@@ -77,8 +78,8 @@
 
             <Border Background="{DynamicResource ControlFillColorDefaultBrush}" 
                     CornerRadius="4" 
-                    Padding="16" 
-                    Margin="0,0,0,12">
+                    Padding="12" 
+                    Margin="0,0,0,8">
                 <StackPanel>
                     <RadioButton x:Name="SkipAllRadio" 
                                  Content="全部跳过" 
