@@ -2,6 +2,7 @@ using RimWorldModManager.Models;
 using RimWorldModManager.Services;
 using RimWorldModManager.Utils;
 using RimWorldModManager.ViewModels;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 using Wpf.Ui.Controls;
@@ -124,19 +125,50 @@ namespace RimWorldModManager
             try
             {
                 var importService = new ModImportService(_cache);
-                var result = await System.Threading.Tasks.Task.Run(() => importService.ImportMods(selectedItems));
+                var result = await System.Threading.Tasks.Task.Run(() => 
+                {
+                    return importService.ImportMods(selectedItems, (modName) =>
+                    {
+                        FileConflictAction action = FileConflictAction.Replace;
+                        Dispatcher.Invoke(() =>
+                        {
+                            var dialog = new FileConflictDialog(modName);
+                            dialog.Owner = this;
+                            if (dialog.ShowDialog() == true)
+                            {
+                                action = dialog.SelectedAction;
+                            }
+                            else
+                            {
+                                action = FileConflictAction.Cancel;
+                            }
+                        });
+                        return action;
+                    });
+                });
 
-                if (result.SuccessCount > 0 && result.FailureCount == 0)
+                if (result.Cancelled)
                 {
-                    _viewModel.StatusMessage = $"{result.SuccessCount} 个 Mod 导入成功";
+                    _viewModel.StatusMessage = "导入已取消";
                 }
-                else if (result.SuccessCount > 0 && result.FailureCount > 0)
+                else
                 {
-                    _viewModel.StatusMessage = $"{result.SuccessCount} 个成功，{result.FailureCount} 个失败";
-                }
-                else if (result.FailureCount > 0)
-                {
-                    _viewModel.StatusMessage = $"{result.FailureCount} 个 Mod 导入失败";
+                    var messages = new List<string>();
+                    if (result.SuccessCount > 0)
+                        messages.Add($"{result.SuccessCount} 个成功");
+                    if (result.SkippedCount > 0)
+                        messages.Add($"{result.SkippedCount} 个跳过");
+                    if (result.FailureCount > 0)
+                        messages.Add($"{result.FailureCount} 个失败");
+
+                    if (messages.Count > 0)
+                    {
+                        _viewModel.StatusMessage = string.Join("，", messages);
+                    }
+                    else
+                    {
+                        _viewModel.StatusMessage = "导入完成";
+                    }
                 }
 
                 await _viewModel.RefreshModsAsync();
