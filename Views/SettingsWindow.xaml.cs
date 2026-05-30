@@ -12,6 +12,7 @@ namespace RimWorldModManager.Views
         private readonly string _originalSteamCmdPath;
         private readonly string _originalModPath;
         private bool _pathsChanged;
+        private bool _isInitialized;
 
         public bool PathsChanged => _pathsChanged;
 
@@ -26,17 +27,11 @@ namespace RimWorldModManager.Views
             _originalModPath = settings.ModDirectories.Count > 0 ? settings.ModDirectories[0] : string.Empty;
             _pathsChanged = false;
 
-            // 初始化时临时移除事件绑定，避免触发消息框
-            SteamAccountTextBox.TextChanged -= SteamAccountTextBox_TextChanged;
-            SteamPasswordBox.PasswordChanged -= SteamPasswordBox_PasswordChanged;
-
             _viewModel.SteamAccount = "anonymous";
             _viewModel.SteamPassword = "anonymous";
             SteamPasswordBox.Password = "anonymous";
 
-            // 重新绑定事件
-            SteamAccountTextBox.TextChanged += SteamAccountTextBox_TextChanged;
-            SteamPasswordBox.PasswordChanged += SteamPasswordBox_PasswordChanged;
+            _isInitialized = true;
         }
 
         private void BrowseSteamCmd_Click(object sender, RoutedEventArgs e)
@@ -98,18 +93,24 @@ namespace RimWorldModManager.Views
 
         private void SteamAccountTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
+            if (!_isInitialized)
+                return;
+
             if (!string.IsNullOrEmpty(_viewModel.SteamAccount) && _viewModel.SteamAccount != "anonymous")
             {
-                System.Windows.MessageBox.Show("本功能还未完善，暂不提供使用。", "提示", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                System.Windows.MessageBox.Show("Steam账号设置未完善，暂无法使用。", "提示", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
             }
         }
 
         private void SteamPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
+            if (!_isInitialized)
+                return;
+
             var passwordBox = sender as Wpf.Ui.Controls.PasswordBox;
             if (passwordBox != null && !string.IsNullOrEmpty(passwordBox.Password))
             {
-                System.Windows.MessageBox.Show("本功能还未完善，暂不提供使用。", "提示", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                System.Windows.MessageBox.Show("Steam密码设置未完善，暂无法使用。", "提示", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
             }
         }
     }

@@ -15,7 +15,7 @@ namespace RimWorldModManager
 
             if (!ValidateSteamCmd())
             {
-                System.Windows.MessageBox.Show("未找到 steamcmd.exe，Mod 下载功能将不可用。\n\n请从 https://developer.valvesoftware.com/wiki/SteamCMD 下载 steamcmd.zip，\n解压到解决方案根目录的 steamcmd 文件夹中。",
+                System.Windows.MessageBox.Show("未找到 steamcmd.exe，Mod 下载功能将不可用。\n\n请从 https://developer.valvesoftware.com/wiki/SteamCMD 下载 steamcmd.zip，\n然后修改设置中 steamcmd.exe 的路径为您下载的 steamcmd.exe 所在位置。",
                     "提示", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
             }
 
