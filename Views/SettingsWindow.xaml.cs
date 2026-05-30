@@ -26,9 +26,17 @@ namespace RimWorldModManager.Views
             _originalModPath = settings.ModDirectories.Count > 0 ? settings.ModDirectories[0] : string.Empty;
             _pathsChanged = false;
 
+            // 初始化时临时移除事件绑定，避免触发消息框
+            SteamAccountTextBox.TextChanged -= SteamAccountTextBox_TextChanged;
+            SteamPasswordBox.PasswordChanged -= SteamPasswordBox_PasswordChanged;
+
             _viewModel.SteamAccount = "anonymous";
             _viewModel.SteamPassword = "anonymous";
             SteamPasswordBox.Password = "anonymous";
+
+            // 重新绑定事件
+            SteamAccountTextBox.TextChanged += SteamAccountTextBox_TextChanged;
+            SteamPasswordBox.PasswordChanged += SteamPasswordBox_PasswordChanged;
         }
 
         private void BrowseSteamCmd_Click(object sender, RoutedEventArgs e)
