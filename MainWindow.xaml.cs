@@ -119,15 +119,31 @@ namespace RimWorldModManager
                 return;
             }
 
+            FileConflictAction selectedAction = FileConflictAction.Replace;
+            bool askForEach = true;
+
+            var batchDialog = new BatchImportOptionsDialog(selectedItems.Count);
+            batchDialog.Owner = this;
+            if (batchDialog.ShowDialog() != true)
+            {
+                return;
+            }
+
+            selectedAction = batchDialog.SelectedAction;
+            askForEach = batchDialog.AskForEachConflict;
+
             _viewModel.IsLoading = true;
             _viewModel.StatusMessage = "正在导入 Mod...";
 
             try
             {
                 var importService = new ModImportService(_cache);
-                var result = await System.Threading.Tasks.Task.Run(() => 
+                importService.SetBatchImportOptions(selectedAction, askForEach);
+
+                Func<string, FileConflictAction> conflictHandler = null;
+                if (askForEach)
                 {
-                    return importService.ImportMods(selectedItems, (modName) =>
+                    conflictHandler = (modName) =>
                     {
                         FileConflictAction action = FileConflictAction.Replace;
                         Dispatcher.Invoke(() =>
@@ -144,7 +160,12 @@ namespace RimWorldModManager
                             }
                         });
                         return action;
-                    });
+                    };
+                }
+
+                var result = await System.Threading.Tasks.Task.Run(() => 
+                {
+                    return importService.ImportMods(selectedItems, conflictHandler);
                 });
 
                 if (result.Cancelled)

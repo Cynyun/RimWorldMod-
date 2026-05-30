@@ -9,19 +9,27 @@ namespace RimWorldModManager.Services
         private readonly ModCache _cache;
         private FileConflictAction _defaultConflictAction;
         private bool _applyAllAction;
+        private bool _askForEachConflict;
 
         public ModImportService(ModCache cache)
         {
             _cache = cache;
             _defaultConflictAction = FileConflictAction.Replace;
             _applyAllAction = false;
+            _askForEachConflict = true;
+        }
+
+        public void SetBatchImportOptions(FileConflictAction action, bool askForEach)
+        {
+            _askForEachConflict = askForEach;
+            _defaultConflictAction = action;
+            _applyAllAction = !askForEach;
         }
 
         public ImportResult ImportMods(IEnumerable<WorkshopModItem> items, 
             Func<string, FileConflictAction> conflictHandler = null)
         {
             var result = new ImportResult();
-            _applyAllAction = false;
 
             foreach (var item in items)
             {
@@ -48,7 +56,7 @@ namespace RimWorldModManager.Services
                     FileConflictAction action = _defaultConflictAction;
                     if (conflictExists && !_applyAllAction)
                     {
-                        if (conflictHandler != null)
+                        if (conflictHandler != null && _askForEachConflict)
                         {
                             action = conflictHandler(item.DisplayName);
                             if (action == FileConflictAction.Cancel)
@@ -56,12 +64,18 @@ namespace RimWorldModManager.Services
                                 result.Cancelled = true;
                                 break;
                             }
-                            if (action == FileConflictAction.ReplaceAll || action == FileConflictAction.KeepBothAll)
+                            if (action == FileConflictAction.ReplaceAll || 
+                                action == FileConflictAction.KeepBothAll || 
+                                action == FileConflictAction.SkipAll)
                             {
                                 _applyAllAction = true;
-                                _defaultConflictAction = action == FileConflictAction.ReplaceAll 
-                                    ? FileConflictAction.Replace 
-                                    : FileConflictAction.KeepBoth;
+                                _defaultConflictAction = action switch
+                                {
+                                    FileConflictAction.ReplaceAll => FileConflictAction.Replace,
+                                    FileConflictAction.KeepBothAll => FileConflictAction.KeepBoth,
+                                    FileConflictAction.SkipAll => FileConflictAction.Skip,
+                                    _ => _defaultConflictAction
+                                };
                             }
                         }
                         else
@@ -75,6 +89,7 @@ namespace RimWorldModManager.Services
                         switch (action)
                         {
                             case FileConflictAction.Skip:
+                            case FileConflictAction.SkipAll:
                                 result.SkippedCount++;
                                 result.SkippedMessages.Add($"{item.DisplayName} 已跳过（冲突）");
                                 continue;
