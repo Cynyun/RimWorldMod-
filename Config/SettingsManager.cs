@@ -1,6 +1,6 @@
+using RimWorldModManager.Utils;
 using System.IO;
 using System.Text.Json;
-using RimWorldModManager.Utils;
 
 namespace RimWorldModManager.Config
 {

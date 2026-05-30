@@ -1,10 +1,7 @@
-using System;
+using RimWorldModManager.Utils;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using RimWorldModManager.Utils;
 
 namespace RimWorldModManager.Services
 {
@@ -124,7 +121,7 @@ namespace RimWorldModManager.Services
             try
             {
                 var testResult = await ExecuteCommandAsync(new[] { "+login", "anonymous", "+quit" }, false);
-                
+
                 var wasLoggedIn = _isLoggedIn;
                 _isLoggedIn = CheckLoginSuccess();
 
@@ -143,7 +140,7 @@ namespace RimWorldModManager.Services
         private bool CheckLoginSuccess()
         {
             var output = _outputBuffer.ToString();
-            return !string.IsNullOrEmpty(output) && 
+            return !string.IsNullOrEmpty(output) &&
                    (output.Contains("Loading Steam API") || output.Contains("Anon"));
         }
 

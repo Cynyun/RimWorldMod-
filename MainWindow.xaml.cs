@@ -1,11 +1,9 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Windows;
-using RimWorldModManager.Models;
+﻿using RimWorldModManager.Models;
 using RimWorldModManager.Services;
-using RimWorldModManager.ViewModels;
 using RimWorldModManager.Utils;
+using RimWorldModManager.ViewModels;
+using System.Diagnostics;
+using System.Windows;
 using Wpf.Ui.Controls;
 
 namespace RimWorldModManager
@@ -113,7 +111,7 @@ namespace RimWorldModManager
         private async void ImportButton_Click(object sender, RoutedEventArgs e)
         {
             var selectedItems = _viewModel.WorkshopMods.Where(m => m.Selected).ToList();
-            
+
             if (selectedItems.Count == 0)
             {
                 _viewModel.StatusMessage = "请先选中要导入的 Mod";
@@ -156,7 +154,7 @@ namespace RimWorldModManager
         private async void UpdateSelectedButton_Click(object sender, RoutedEventArgs e)
         {
             var selectedItems = _viewModel.WorkshopMods.Where(m => m.Selected).ToList();
-            
+
             if (selectedItems.Count == 0)
             {
                 _viewModel.StatusMessage = "请先选中要更新的 Mod";
@@ -174,7 +172,7 @@ namespace RimWorldModManager
                 foreach (var item in selectedItems)
                 {
                     _viewModel.StatusMessage = $"正在更新 Mod {item.WorkshopId}...";
-                    
+
                     var result = await _steamService.DownloadModAsync(item.WorkshopId);
 
                     if (result.ExitCode == 0 && !result.TimedOut)
@@ -234,7 +232,7 @@ namespace RimWorldModManager
                 }
                 else
                 {
-                    var errorMsg = result.TimedOut ? "下载超时" : 
+                    var errorMsg = result.TimedOut ? "下载超时" :
                         (string.IsNullOrEmpty(result.StandardError) ? "下载失败" : result.StandardError);
                     _viewModel.StatusMessage = $"下载失败: {errorMsg}";
                 }
@@ -291,7 +289,7 @@ namespace RimWorldModManager
         {
             string pathToOpen = null;
 
-            if (!string.IsNullOrEmpty(_viewModel.SelectedModDetail.LocalPath) && 
+            if (!string.IsNullOrEmpty(_viewModel.SelectedModDetail.LocalPath) &&
                 System.IO.Directory.Exists(_viewModel.SelectedModDetail.LocalPath))
             {
                 pathToOpen = _viewModel.SelectedModDetail.LocalPath;
@@ -304,7 +302,7 @@ namespace RimWorldModManager
                 {
                     localModsPath = PathHelper.GetDefaultModsPath();
                 }
-                
+
                 if (System.IO.Directory.Exists(localModsPath))
                 {
                     pathToOpen = localModsPath;

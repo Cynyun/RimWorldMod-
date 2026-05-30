@@ -6,8 +6,8 @@
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                  xmlns:local="clr-namespace:RimWorldModManager"
                  xmlns:views="clr-namespace:RimWorldModManager.Views"
-                 mc:Ignorable="d"
-                 Title="RimWorld Mod 管理器" Height="600" Width="1050"
+                  mc:Ignorable="d"
+                 Title="RimWorld Mod 管理器" Height="800" Width="1350"
                  WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>

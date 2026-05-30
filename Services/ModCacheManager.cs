@@ -1,6 +1,6 @@
+using RimWorldModManager.Models;
 using System.IO;
 using System.Text.Json;
-using RimWorldModManager.Models;
 
 namespace RimWorldModManager.Services
 {
@@ -75,7 +75,7 @@ namespace RimWorldModManager.Services
 
         public static string GetDisplayName(ModCache cache, uint workshopId)
         {
-            if (cache.WorkshopCache.TryGetValue(workshopId, out var entry) && 
+            if (cache.WorkshopCache.TryGetValue(workshopId, out var entry) &&
                 !string.IsNullOrEmpty(entry.DisplayName))
             {
                 return entry.DisplayName;

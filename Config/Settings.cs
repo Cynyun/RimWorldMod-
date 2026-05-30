@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace RimWorldModManager.Config
 {
     public class Settings

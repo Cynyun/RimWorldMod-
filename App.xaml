@@ -11,7 +11,7 @@
                 <ui:ThemesDictionary Theme="Dark" />
                 <ui:ControlsDictionary />
             </ResourceDictionary.MergedDictionaries>
-            
+
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <converters:BooleanToInverseVisibilityConverter x:Key="BooleanToInverseVisibilityConverter" />
         </ResourceDictionary>

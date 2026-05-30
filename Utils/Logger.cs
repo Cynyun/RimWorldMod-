@@ -1,5 +1,3 @@
-using System;
-
 namespace RimWorldModManager.Utils
 {
     public interface ILogger

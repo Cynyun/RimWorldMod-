@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace RimWorldModManager.Models
 {
     public class ModCacheEntry

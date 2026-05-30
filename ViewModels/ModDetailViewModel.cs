@@ -1,7 +1,6 @@
-using System;
+using RimWorldModManager.Models;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using RimWorldModManager.Models;
 
 namespace RimWorldModManager.ViewModels
 {
@@ -123,8 +122,8 @@ namespace RimWorldModManager.ViewModels
 
         public bool HasMod => Mod != null;
 
-        public string WorkshopUrl => Mod != null 
-            ? $"https://steamcommunity.com/workshop/filedetails/?id={Mod.WorkshopId}" 
+        public string WorkshopUrl => Mod != null
+            ? $"https://steamcommunity.com/workshop/filedetails/?id={Mod.WorkshopId}"
             : string.Empty;
 
         public string AuthorDisplay

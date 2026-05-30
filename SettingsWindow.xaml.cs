@@ -1,7 +1,7 @@
-using System.IO;
-using System.Windows;
 using RimWorldModManager.Config;
 using RimWorldModManager.ViewModels;
+using System.IO;
+using System.Windows;
 using Wpf.Ui.Controls;
 
 namespace RimWorldModManager
@@ -65,7 +65,7 @@ namespace RimWorldModManager
                 Directory.CreateDirectory(_viewModel.ModDownloadPath);
             }
 
-            _pathsChanged = 
+            _pathsChanged =
                 _viewModel.SteamCmdPath != _originalSteamCmdPath ||
                 _viewModel.ModDownloadPath != _originalModPath;
 

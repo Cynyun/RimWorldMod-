@@ -1,5 +1,5 @@
-using System.Windows;
 using RimWorldModManager.ViewModels;
+using System.Windows;
 
 namespace RimWorldModManager.Views
 {

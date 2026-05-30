@@ -1,10 +1,8 @@
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using RimWorldModManager.Models;
 using RimWorldModManager.Utils;
+using System.ComponentModel;
+using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace RimWorldModManager.Services
 {
@@ -21,22 +19,22 @@ namespace RimWorldModManager.Services
         {
             var settings = Config.SettingsManager.GetCurrent();
             string steamCmdDir = null;
-            
+
             if (!string.IsNullOrEmpty(settings.SteamCmdPath) && File.Exists(settings.SteamCmdPath))
             {
                 steamCmdDir = Path.GetDirectoryName(settings.SteamCmdPath);
             }
-            
+
             if (string.IsNullOrEmpty(steamCmdDir))
             {
                 steamCmdDir = Path.GetDirectoryName(PathHelper.GetSteamCmdExePath());
             }
-            
+
             if (string.IsNullOrEmpty(steamCmdDir))
             {
                 steamCmdDir = Path.Combine(PathHelper.GetAppRoot(), "steamcmd");
             }
-            
+
             var workshopPath = Path.Combine(steamCmdDir, "steamapps", "workshop", "content", "294100");
             var result = new List<WorkshopModItem>();
 
@@ -75,7 +73,7 @@ namespace RimWorldModManager.Services
         {
             var settings = Config.SettingsManager.GetCurrent();
             var modDirectories = settings.ModDirectories ?? new List<string>();
-            
+
             if (!modDirectories.Any())
             {
                 modDirectories.Add(PathHelper.GetDefaultModsPath());
@@ -106,7 +104,7 @@ namespace RimWorldModManager.Services
                     }
 
                     var dirInfo = new DirectoryInfo(dir);
-                    
+
                     result.Add(new LocalModItem
                     {
                         LocalFolderName = dirName,

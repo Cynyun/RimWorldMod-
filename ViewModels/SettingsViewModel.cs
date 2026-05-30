@@ -1,11 +1,9 @@
-using System.Collections.Generic;
+using RimWorldModManager.Config;
+using RimWorldModManager.Utils;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using RimWorldModManager.Config;
-using RimWorldModManager.Utils;
 
 namespace RimWorldModManager.ViewModels
 {
@@ -87,7 +85,7 @@ namespace RimWorldModManager.ViewModels
         {
             var settings = SettingsManager.GetCurrent();
             SteamCmdPath = settings.SteamCmdPath ?? PathHelper.GetSteamCmdExePath();
-            
+
             if (settings.ModDirectories != null && settings.ModDirectories.Count > 0)
             {
                 ModDownloadPath = settings.ModDirectories[0];
@@ -105,10 +103,10 @@ namespace RimWorldModManager.ViewModels
         {
             var settings = SettingsManager.GetCurrent();
             settings.SteamCmdPath = SteamCmdPath;
-            
+
             if (settings.ModDirectories == null)
                 settings.ModDirectories = new List<string>();
-            
+
             if (settings.ModDirectories.Count == 0)
             {
                 settings.ModDirectories.Add(ModDownloadPath);
@@ -117,7 +115,7 @@ namespace RimWorldModManager.ViewModels
             {
                 settings.ModDirectories[0] = ModDownloadPath;
             }
-            
+
             SettingsManager.Save();
         }
 
@@ -182,10 +180,10 @@ namespace RimWorldModManager.ViewModels
         {
             if (string.IsNullOrWhiteSpace(SteamCmdPath) || !File.Exists(SteamCmdPath))
                 return false;
-            
+
             if (string.IsNullOrWhiteSpace(ModDownloadPath))
                 return false;
-            
+
             return true;
         }
 

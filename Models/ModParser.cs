@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Xml;
 
 namespace RimWorldModManager.Models
@@ -61,7 +58,7 @@ namespace RimWorldModManager.Models
             {
                 using var reader = XmlReader.Create(xmlPath);
                 var tags = new List<string>();
-                
+
                 while (reader.Read())
                 {
                     if (reader.NodeType == XmlNodeType.Element)
@@ -86,7 +83,7 @@ namespace RimWorldModManager.Models
                         }
                     }
                 }
-                
+
                 modInfo.Tags = tags.ToArray();
             }
             catch
@@ -111,7 +108,7 @@ namespace RimWorldModManager.Models
             {
                 using var reader = XmlReader.Create(xmlPath);
                 var tags = new List<string>();
-                
+
                 while (reader.Read())
                 {
                     if (reader.NodeType == XmlNodeType.Element)
@@ -136,7 +133,7 @@ namespace RimWorldModManager.Models
                         }
                     }
                 }
-                
+
                 modInfo.Tags = tags.ToArray();
             }
             catch
@@ -163,7 +160,7 @@ namespace RimWorldModManager.Models
                 var imageExtensions = new[] { ".png", ".jpg", ".jpeg", ".bmp", ".gif" };
                 var imageFiles = Directory.GetFiles(aboutDir)
                     .Where(f => imageExtensions.Any(ext => f.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))
-                    .OrderBy(f => 
+                    .OrderBy(f =>
                     {
                         var name = Path.GetFileNameWithoutExtension(f).ToLower();
                         if (name.Contains("preview")) return 0;

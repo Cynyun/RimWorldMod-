@@ -1,5 +1,3 @@
-using System;
-
 namespace RimWorldModManager.Models
 {
     public class ModInfo

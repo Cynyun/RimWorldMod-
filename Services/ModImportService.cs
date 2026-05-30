@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using RimWorldModManager.Models;
 using RimWorldModManager.Utils;
+using System.IO;
 
 namespace RimWorldModManager.Services
 {
@@ -40,9 +37,9 @@ namespace RimWorldModManager.Services
 
                     var destPath = GetDestinationPath(item.DisplayName);
                     CopyModDirectory(item.SourcePath, destPath);
-                    
+
                     ModCacheManager.MarkAsImported(_cache, item.WorkshopId, Path.GetFileName(destPath));
-                    
+
                     result.SuccessCount++;
                     result.SuccessMessages.Add($"{item.DisplayName} 导入成功");
                 }
@@ -85,7 +82,7 @@ namespace RimWorldModManager.Services
         {
             var invalidChars = Path.GetInvalidFileNameChars();
             var cleanName = new string(name.Where(c => !invalidChars.Contains(c)).ToArray());
-            
+
             if (string.IsNullOrWhiteSpace(cleanName))
                 cleanName = "UnknownMod";
 

@@ -28,14 +28,14 @@ namespace RimWorldModManager.Utils
         {
             var steamCmdPath = GetSteamCmdExePath();
             var steamCmdDir = Path.GetDirectoryName(steamCmdPath);
-            
+
             if (string.IsNullOrEmpty(steamCmdDir))
             {
                 steamCmdDir = Path.Combine(GetAppRoot(), "steamcmd");
             }
-            
+
             var workshopPath = Path.Combine(steamCmdDir, "steamapps", "workshop", "content", "294100");
-            
+
             return workshopPath;
         }
 
