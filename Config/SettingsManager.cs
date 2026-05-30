@@ -50,10 +50,6 @@ namespace RimWorldModManager.Config
         {
             return new Settings
             {
-                GamePaths = new()
-                {
-                    { "RimWorld", @"C:\Program Files (x86)\Steam\steamapps\common\RimWorld" }
-                },
                 ModDirectories = new()
                 {
                     PathHelper.GetDefaultModsPath()

@@ -142,9 +142,6 @@ RimWorldModManager/
 
 ```json
 {
-  "GamePaths": {
-    "RimWorld": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\RimWorld"
-  },
   "ModDirectories": [
     "./mods"
   ],
@@ -152,7 +149,6 @@ RimWorldModManager/
 }
 ```
 
-- `GamePaths` - 游戏安装路径（预留）
 - `ModDirectories` - Mod 下载目录列表（支持相对路径）
 - `SteamCmdPath` - SteamCMD 可执行文件路径（支持相对路径）
 
