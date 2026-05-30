@@ -1,4 +1,4 @@
-﻿using RimWorldModManager.Models;
+using RimWorldModManager.Models;
 using RimWorldModManager.Services;
 using RimWorldModManager.Utils;
 using RimWorldModManager.ViewModels;
@@ -330,6 +330,32 @@ namespace RimWorldModManager
                     UseShellExecute = true
                 });
             }
+        }
+
+        private void SortComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (_viewModel == null)
+                return;
+
+            if (SortComboBox.SelectedItem is System.Windows.Controls.ComboBoxItem item)
+            {
+                var sortText = item.Content?.ToString();
+                _viewModel.CurrentSortOption = sortText switch
+                {
+                    "名称" => ModSortOption.Name,
+                    "修改时间" => ModSortOption.LastModified,
+                    "Workshop ID" => ModSortOption.WorkshopId,
+                    _ => ModSortOption.Name
+                };
+            }
+        }
+
+        private void SortDirectionButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_viewModel == null)
+                return;
+
+            _viewModel.ToggleSortDirection();
         }
     }
 }

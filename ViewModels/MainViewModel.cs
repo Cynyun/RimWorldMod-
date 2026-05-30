@@ -1,6 +1,7 @@
 using RimWorldModManager.Services;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace RimWorldModManager.ViewModels
@@ -9,6 +10,14 @@ namespace RimWorldModManager.ViewModels
     {
         LocalMods,
         WorkshopMods
+    }
+
+    public enum ModSortOption
+    {
+        Name,
+        LastModified,
+        WorkshopId,
+        Size
     }
 
     public class MainViewModel : INotifyPropertyChanged
@@ -22,6 +31,8 @@ namespace RimWorldModManager.ViewModels
         private ObservableCollection<WorkshopModItem> _allWorkshopMods = new();
         private ObservableCollection<LocalModItem> _allLocalMods = new();
         private ModDetailViewModel _selectedModDetail = new();
+        private ModSortOption _currentSortOption = ModSortOption.Name;
+        private bool _isSortAscending = true;
 
         public ObservableCollection<WorkshopModItem> WorkshopMods { get; } = new();
         public ObservableCollection<LocalModItem> LocalMods { get; } = new();
@@ -51,6 +62,31 @@ namespace RimWorldModManager.ViewModels
 
         public bool IsLocalModsView => CurrentViewMode == ModViewMode.LocalMods;
         public bool IsWorkshopModsView => CurrentViewMode == ModViewMode.WorkshopMods;
+
+        public ModSortOption CurrentSortOption
+        {
+            get => _currentSortOption;
+            set
+            {
+                _currentSortOption = value;
+                OnPropertyChanged();
+                ApplySearchFilter();
+            }
+        }
+
+        public bool IsSortAscending
+        {
+            get => _isSortAscending;
+            set
+            {
+                _isSortAscending = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(SortDirectionText));
+                ApplySearchFilter();
+            }
+        }
+
+        public string SortDirectionText => IsSortAscending ? "↑" : "↓";
 
         public string StatusMessage
         {
@@ -137,44 +173,76 @@ namespace RimWorldModManager.ViewModels
 
         private void ApplySearchFilter()
         {
+            var localFiltered = string.IsNullOrWhiteSpace(_searchText)
+                ? _allLocalMods.ToList()
+                : _allLocalMods.Where(mod =>
+                    (mod.DisplayName != null && mod.DisplayName.ToLowerInvariant().Contains(_searchText.ToLowerInvariant())) ||
+                    (mod.Author != null && mod.Author.ToLowerInvariant().Contains(_searchText.ToLowerInvariant())) ||
+                    (mod.WorkshopId.HasValue && mod.WorkshopId.Value.ToString().Contains(_searchText.ToLowerInvariant()))).ToList();
+
+            var sortedLocal = ApplySort(localFiltered, true);
+
             LocalMods.Clear();
-            if (string.IsNullOrWhiteSpace(_searchText))
-            {
-                foreach (var mod in _allLocalMods)
-                    LocalMods.Add(mod);
-            }
-            else
-            {
-                var searchLower = _searchText.ToLowerInvariant();
-                foreach (var mod in _allLocalMods)
-                {
-                    if ((mod.DisplayName != null && mod.DisplayName.ToLowerInvariant().Contains(searchLower)) ||
-                        (mod.Author != null && mod.Author.ToLowerInvariant().Contains(searchLower)) ||
-                        (mod.WorkshopId.HasValue && mod.WorkshopId.Value.ToString().Contains(searchLower)))
-                    {
-                        LocalMods.Add(mod);
-                    }
-                }
-            }
+            foreach (var mod in sortedLocal)
+                LocalMods.Add(mod);
+
+            var workshopFiltered = string.IsNullOrWhiteSpace(_searchText)
+                ? _allWorkshopMods.ToList()
+                : _allWorkshopMods.Where(mod =>
+                    (mod.DisplayName != null && mod.DisplayName.ToLowerInvariant().Contains(_searchText.ToLowerInvariant())) ||
+                    (mod.WorkshopId.ToString().Contains(_searchText.ToLowerInvariant()))).ToList();
+
+            var sortedWorkshop = ApplySort(workshopFiltered, false);
 
             WorkshopMods.Clear();
-            if (string.IsNullOrWhiteSpace(_searchText))
+            foreach (var mod in sortedWorkshop)
+                WorkshopMods.Add(mod);
+        }
+
+        private IEnumerable<LocalModItem> ApplySort(IEnumerable<LocalModItem> items, bool isLocal)
+        {
+            return _currentSortOption switch
             {
-                foreach (var mod in _allWorkshopMods)
-                    WorkshopMods.Add(mod);
-            }
-            else
+                ModSortOption.Name => _isSortAscending
+                    ? items.OrderBy(m => m.DisplayName ?? "")
+                    : items.OrderByDescending(m => m.DisplayName ?? ""),
+                ModSortOption.LastModified => _isSortAscending
+                    ? items.OrderBy(m => m.LastModified)
+                    : items.OrderByDescending(m => m.LastModified),
+                ModSortOption.WorkshopId when isLocal => _isSortAscending
+                    ? items.OrderBy(m => m.WorkshopId ?? uint.MaxValue)
+                    : items.OrderByDescending(m => m.WorkshopId ?? 0),
+                ModSortOption.WorkshopId => _isSortAscending
+                    ? items.OrderBy(m => m.DisplayName ?? "")
+                    : items.OrderByDescending(m => m.DisplayName ?? ""),
+                _ => _isSortAscending
+                    ? items.OrderBy(m => m.DisplayName ?? "")
+                    : items.OrderByDescending(m => m.DisplayName ?? "")
+            };
+        }
+
+        private IEnumerable<WorkshopModItem> ApplySort(IEnumerable<WorkshopModItem> items, bool isLocal)
+        {
+            return _currentSortOption switch
             {
-                var searchLower = _searchText.ToLowerInvariant();
-                foreach (var mod in _allWorkshopMods)
-                {
-                    if ((mod.DisplayName != null && mod.DisplayName.ToLowerInvariant().Contains(searchLower)) ||
-                        (mod.WorkshopId.ToString().Contains(searchLower)))
-                    {
-                        WorkshopMods.Add(mod);
-                    }
-                }
-            }
+                ModSortOption.Name => _isSortAscending
+                    ? items.OrderBy(m => m.DisplayName ?? "")
+                    : items.OrderByDescending(m => m.DisplayName ?? ""),
+                ModSortOption.LastModified => _isSortAscending
+                    ? items.OrderBy(m => m.LastModified)
+                    : items.OrderByDescending(m => m.LastModified),
+                ModSortOption.WorkshopId => _isSortAscending
+                    ? items.OrderBy(m => m.WorkshopId)
+                    : items.OrderByDescending(m => m.WorkshopId),
+                _ => _isSortAscending
+                    ? items.OrderBy(m => m.DisplayName ?? "")
+                    : items.OrderByDescending(m => m.DisplayName ?? "")
+            };
+        }
+
+        public void ToggleSortDirection()
+        {
+            IsSortAscending = !IsSortAscending;
         }
 
         public void SelectAllWorkshopMods()
