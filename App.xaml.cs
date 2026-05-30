@@ -24,10 +24,6 @@ namespace RimWorldModManager
 
         private void InitializeDirectories()
         {
-            var modsDir = PathHelper.GetDefaultModsPath();
-            if (!Directory.Exists(modsDir))
-                Directory.CreateDirectory(modsDir);
-
             var configDir = PathHelper.GetConfigPath();
             if (!Directory.Exists(configDir))
                 Directory.CreateDirectory(configDir);
