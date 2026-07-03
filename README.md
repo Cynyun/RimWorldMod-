@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # RimWorldModManager
 
 RimWorld Mod 管理器 - 基于 SteamCMD 的 WPF 桌面应用程序，用于管理 RimWorld 创意工坊 Mod。
@@ -174,3 +175,7 @@ RimWorldModManager/
 ## License
 
 MIT
+=======
+# RimWorldMod-
+使用steamcmd进行下载和更新RimWorld Mod的Mod管理器。
+>>>>>>> 78db0db1deb6cd269e8a872277504ac964b7b788
