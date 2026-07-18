@@ -5,7 +5,7 @@
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
                  mc:Ignorable="d"
-                 Title="批量下载 Mod" Height="450" Width="500"
+                 Title="批量下载 Mod" Height="700" Width="1000"
                  WindowStartupLocation="CenterOwner"
                  MouseDown="FluentWindow_MouseDown">
     <Grid Margin="16">
@@ -13,52 +13,57 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Text="批量下载 Mod" FontSize="16" FontWeight="Bold" Margin="0,0,0,16" />
 
-        <StackPanel Grid.Row="1">
-            <TextBlock Text="输入 Workshop ID（每行一个）" Margin="0,0,0,8" />
-            <ui:TextBox x:Name="WorkshopIdsTextBox"
-                        AcceptsReturn="True"
-                        PlaceholderText="输入 Workshop ID，每行一个&#10;例如：&#10;123456789&#10;987654321"
-                        Height="150"
-                        Margin="0,0,0,8" />
-            
-            <TextBlock Text="已添加的 Workshop ID" Margin="0,0,0,8" />
-            <ListBox x:Name="WorkshopIdsList"
-                        Height="120"
-                        Margin="0,0,0,8">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="{Binding}" VerticalAlignment="Center" />
-                            <Button Grid.Column="1" 
-                                       Content="删除" 
-                                       Width="60" 
-                                       Height="24" 
-                                       Margin="8,0,0,0"
-                                       Click="DeleteItemButton_Click" />
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,8">
-            <ui:Button Content="添加到列表" 
-                       Click="AddToListButton_Click" 
-                       Margin="0,0,8,0" />
-            <ui:Button Content="清空列表" 
-                       Click="ClearListButton_Click" />
-        </StackPanel>
+            <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                <TextBlock Text="输入 Workshop ID（每行一个）" Margin="0,0,0,8" />
+                <ui:TextBox x:Name="WorkshopIdsTextBox"
+                            AcceptsReturn="True"
+                            PlaceholderText="输入 Workshop ID，每行一个&#10;例如：&#10;123456789&#10;987654321"
+                            Margin="0,0,0,8" />
+                
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <ui:Button Content="添加到列表" 
+                               Click="AddToListButton_Click" 
+                               Margin="0,0,8,0" />
+                    <ui:Button Content="清空列表" 
+                               Click="ClearListButton_Click" />
+                </StackPanel>
+            </StackPanel>
 
-        <Grid Grid.Row="3">
+            <StackPanel Grid.Column="1">
+                <TextBlock Text="已添加的 Workshop ID" Margin="0,0,0,8" />
+                <ListBox x:Name="WorkshopIdsList" Margin="0,0,0,8">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding}" VerticalAlignment="Center" />
+                                <Button Grid.Column="1" 
+                                           Content="删除" 
+                                           Width="60" 
+                                           Height="24" 
+                                           Margin="8,0,0,0"
+                                           Click="DeleteItemButton_Click" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
