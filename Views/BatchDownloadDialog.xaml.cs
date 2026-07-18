@@ -2,11 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Wpf.Ui.Controls;
 
 namespace RimWorldModManager.Views
 {
-    public partial class BatchDownloadDialog : FluentWindow
+    public partial class BatchDownloadDialog : Wpf.Ui.Controls.FluentWindow
     {
         public List<uint> SelectedWorkshopIds { get; private set; } = new();
 
@@ -68,7 +67,7 @@ namespace RimWorldModManager.Views
         {
             if (SelectedWorkshopIds.Count == 0)
             {
-                MessageBox.Show("请先添加要下载的 Workshop ID", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                System.Windows.MessageBox.Show("请先添加要下载的 Workshop ID", "提示", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
                 return;
             }
 
