@@ -41,7 +41,7 @@ namespace RimWorldModManager.Views
 
         private void DeleteItemButton_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button button && button.DataContext is uint workshopId)
+            if (sender is System.Windows.Controls.Button button && button.DataContext is uint workshopId)
             {
                 SelectedWorkshopIds.Remove(workshopId);
                 UpdateListBox();
