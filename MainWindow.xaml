@@ -40,6 +40,10 @@
                        Content="下载 Mod"
                        Click="DownloadButton_Click" 
                        Margin="0,0,8,0" />
+            <ui:Button x:Name="BatchDownloadButton" 
+                       Content="批量下载"
+                       Click="BatchDownloadButton_Click" 
+                       Margin="0,0,8,0" />
             <Separator Width="1" Background="Gray" Margin="8,0" />
             
             <ui:TextBox x:Name="SearchTextBox"
@@ -192,8 +196,20 @@
             </ui:Card>
         </Grid>
 
-        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="16,8,0,8">
-            <TextBlock Text="{Binding StatusMessage}" FontSize="12" />
+        <StackPanel Grid.Row="3" Margin="16,8,8,8">
+            <TextBlock Text="{Binding StatusMessage}" FontSize="12" Margin="0,0,0,4" />
+            <ProgressBar x:Name="CurrentProgressBar" 
+                         Value="{Binding CurrentProgress}" 
+                         Maximum="{Binding TotalProgress}"
+                         Height="4"
+                         Margin="0,0,0,4"
+                         Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <ProgressBar x:Name="TotalProgressBar" 
+                         Value="{Binding CurrentProgress}" 
+                         Maximum="{Binding TotalProgress}"
+                         Height="4"
+                         Margin="0,0,0,4"
+                         Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}" />
         </StackPanel>
     </Grid>
 </ui:FluentWindow>

@@ -250,15 +250,21 @@ namespace RimWorldModManager
 
             _viewModel.IsLoading = true;
             _viewModel.StatusMessage = $"正在更新 {selectedItems.Count} 个 Mod...";
+            _viewModel.CurrentProgress = 0;
+            _viewModel.TotalProgress = selectedItems.Count;
 
             int successCount = 0;
             int failureCount = 0;
 
             try
             {
-                foreach (var item in selectedItems)
+                for (int i = 0; i < selectedItems.Count; i++)
                 {
-                    _viewModel.StatusMessage = $"正在更新 Mod {item.WorkshopId}...";
+                    var item = selectedItems[i];
+                    int currentIndex = i + 1;
+                    
+                    _viewModel.StatusMessage = $"正在更新 Mod {item.WorkshopId} (第 {currentIndex} 个/共 {selectedItems.Count} 个)...";
+                    _viewModel.CurrentProgress = currentIndex;
 
                     var result = await _steamService.DownloadModAsync(item.WorkshopId);
 
@@ -301,6 +307,8 @@ namespace RimWorldModManager
             finally
             {
                 _viewModel.IsLoading = false;
+                _viewModel.CurrentProgress = 0;
+                _viewModel.TotalProgress = 0;
             }
         }
 
@@ -450,6 +458,82 @@ namespace RimWorldModManager
                 return;
 
             _viewModel.ToggleSortDirection();
+        }
+
+        private async void BatchDownloadButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new BatchDownloadDialog();
+            dialog.Owner = this;
+            
+            if (dialog.ShowDialog() != true)
+                return;
+
+            var workshopIds = dialog.SelectedWorkshopIds;
+            if (workshopIds.Count == 0)
+                return;
+
+            _viewModel.IsLoading = true;
+            _viewModel.StatusMessage = $"正在批量下载 {workshopIds.Count} 个 Mod...";
+            _viewModel.CurrentProgress = 0;
+            _viewModel.TotalProgress = workshopIds.Count;
+
+            int successCount = 0;
+            int failureCount = 0;
+
+            try
+            {
+                for (int i = 0; i < workshopIds.Count; i++)
+                {
+                    uint workshopId = workshopIds[i];
+                    int currentIndex = i + 1;
+                    
+                    _viewModel.StatusMessage = $"正在下载 Mod {workshopId} (第 {currentIndex} 个/共 {workshopIds.Count} 个)...";
+                    _viewModel.CurrentProgress = currentIndex;
+
+                    var result = await _steamService.DownloadModAsync(workshopId);
+
+                    if (result.ExitCode == 0 && !result.TimedOut)
+                    {
+                        successCount++;
+                    }
+                    else
+                    {
+                        failureCount++;
+                    }
+                }
+
+                string downloadResultMessage;
+                if (successCount > 0 && failureCount == 0)
+                {
+                    downloadResultMessage = $"{successCount} 个 Mod 下载成功";
+                }
+                else if (successCount > 0 && failureCount > 0)
+                {
+                    downloadResultMessage = $"{successCount} 个成功，{failureCount} 个失败";
+                }
+                else
+                {
+                    downloadResultMessage = $"{failureCount} 个 Mod 下载失败";
+                }
+
+                _viewModel.StatusMessage = downloadResultMessage;
+                await Task.Delay(1500);
+
+                _viewModel.StatusMessage = "下载完成，正在刷新 Mod 列表...";
+                await _viewModel.RefreshModsAsync();
+
+                _viewModel.StatusMessage = $"{downloadResultMessage} - 已刷新 Mod 列表";
+            }
+            catch (Exception ex)
+            {
+                _viewModel.StatusMessage = $"下载失败: {ex.Message}";
+            }
+            finally
+            {
+                _viewModel.IsLoading = false;
+                _viewModel.CurrentProgress = 0;
+                _viewModel.TotalProgress = 0;
+            }
         }
     }
 }

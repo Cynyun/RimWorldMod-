@@ -28,6 +28,8 @@ namespace RimWorldModManager.ViewModels
         private string _steamCmdOutput = string.Empty;
         private bool _isLoading;
         private string _searchText = string.Empty;
+        private int _currentProgress;
+        private int _totalProgress;
         private ObservableCollection<WorkshopModItem> _allWorkshopMods = new();
         private ObservableCollection<LocalModItem> _allLocalMods = new();
         private ModDetailViewModel _selectedModDetail = new();
@@ -114,6 +116,26 @@ namespace RimWorldModManager.ViewModels
             set
             {
                 _isLoading = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int CurrentProgress
+        {
+            get => _currentProgress;
+            set
+            {
+                _currentProgress = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int TotalProgress
+        {
+            get => _totalProgress;
+            set
+            {
+                _totalProgress = value;
                 OnPropertyChanged();
             }
         }
