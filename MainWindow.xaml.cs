@@ -249,7 +249,6 @@ namespace RimWorldModManager
             }
 
             _viewModel.IsLoading = true;
-            _viewModel.StatusMessage = $"正在更新 {selectedItems.Count} 个 Mod...";
             _viewModel.CurrentProgress = 0;
             _viewModel.TotalProgress = selectedItems.Count;
 
@@ -263,7 +262,8 @@ namespace RimWorldModManager
                     var item = selectedItems[i];
                     int currentIndex = i + 1;
                     
-                    _viewModel.StatusMessage = $"正在更新 Mod {item.WorkshopId} (第 {currentIndex} 个/共 {selectedItems.Count} 个)...";
+                    _viewModel.CurrentModName = $"正在更新 Mod {item.WorkshopId}";
+                    _viewModel.ProgressText = $"第 {currentIndex} 个/共 {selectedItems.Count} 个";
                     _viewModel.CurrentProgress = currentIndex;
 
                     var result = await _steamService.DownloadModAsync(item.WorkshopId);
@@ -473,7 +473,6 @@ namespace RimWorldModManager
                 return;
 
             _viewModel.IsLoading = true;
-            _viewModel.StatusMessage = $"正在批量下载 {workshopIds.Count} 个 Mod...";
             _viewModel.CurrentProgress = 0;
             _viewModel.TotalProgress = workshopIds.Count;
 
@@ -487,7 +486,8 @@ namespace RimWorldModManager
                     uint workshopId = workshopIds[i];
                     int currentIndex = i + 1;
                     
-                    _viewModel.StatusMessage = $"正在下载 Mod {workshopId} (第 {currentIndex} 个/共 {workshopIds.Count} 个)...";
+                    _viewModel.CurrentModName = $"正在下载 Mod {workshopId}";
+                    _viewModel.ProgressText = $"第 {currentIndex} 个/共 {workshopIds.Count} 个";
                     _viewModel.CurrentProgress = currentIndex;
 
                     var result = await _steamService.DownloadModAsync(workshopId);

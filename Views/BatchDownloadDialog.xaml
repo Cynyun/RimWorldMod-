@@ -54,9 +54,9 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" Text="已添加的 Workshop ID" Margin="0,0,0,8" />
+                <TextBlock Grid.Row="0" Text="已添加的 Workshop ID" Margin="0,0,0,4" />
 
-                <ListBox Grid.Row="1" x:Name="WorkshopIdsList" Margin="0,0,0,8">
+                <ListBox Grid.Row="1" x:Name="WorkshopIdsList" Margin="0,0,0,4">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Grid>
@@ -68,7 +68,7 @@
                                 <Button Grid.Column="1" 
                                            Content="删除" 
                                            Width="60" 
-                                           Height="28" 
+                                           Height="30" 
                                            Margin="8,0,0,0"
                                            Click="DeleteItemButton_Click" />
                             </Grid>

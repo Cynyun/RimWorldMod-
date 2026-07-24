@@ -30,6 +30,8 @@ namespace RimWorldModManager.ViewModels
         private string _searchText = string.Empty;
         private int _currentProgress;
         private int _totalProgress;
+        private string _currentModName = string.Empty;
+        private string _progressText = string.Empty;
         private ObservableCollection<WorkshopModItem> _allWorkshopMods = new();
         private ObservableCollection<LocalModItem> _allLocalMods = new();
         private ModDetailViewModel _selectedModDetail = new();
@@ -136,6 +138,26 @@ namespace RimWorldModManager.ViewModels
             set
             {
                 _totalProgress = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string CurrentModName
+        {
+            get => _currentModName;
+            set
+            {
+                _currentModName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string ProgressText
+        {
+            get => _progressText;
+            set
+            {
+                _progressText = value;
                 OnPropertyChanged();
             }
         }
