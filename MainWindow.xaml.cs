@@ -32,7 +32,6 @@ namespace RimWorldModManager
 
             Loaded += MainWindow_Loaded;
             Closed += MainWindow_Closed;
-            LocalModsToggle.IsChecked = true;
         }
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -86,7 +85,7 @@ namespace RimWorldModManager
 
         private void ViewModeDropDown_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
+            var button = sender as System.Windows.Controls.Button;
             button?.ContextMenu?.IsOpen = true;
         }
 
