@@ -60,13 +60,19 @@ namespace RimWorldModManager.ViewModels
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(IsLocalModsView));
                 OnPropertyChanged(nameof(IsWorkshopModsView));
+                OnPropertyChanged(nameof(CurrentViewModeIndex));
                 ApplySearchFilter();
             }
         }
 
+        public int CurrentViewModeIndex
+        {
+            get => (int)CurrentViewMode;
+            set => CurrentViewMode = (ModViewMode)value;
+        }
+
         public bool IsLocalModsView => CurrentViewMode == ModViewMode.LocalMods;
         public bool IsWorkshopModsView => CurrentViewMode == ModViewMode.WorkshopMods;
-        public string CurrentViewModeText => CurrentViewMode == ModViewMode.LocalMods ? "游戏 Mods" : "Workshop";
 
         public ModSortOption CurrentSortOption
         {
@@ -181,7 +187,6 @@ namespace RimWorldModManager.ViewModels
 
         public async Task RefreshModsAsync()
         {
-            IsLoading = true;
             StatusMessage = "正在扫描 Mod...";
 
             try
@@ -209,10 +214,6 @@ namespace RimWorldModManager.ViewModels
             catch (System.Exception ex)
             {
                 StatusMessage = $"扫描失败: {ex.Message}";
-            }
-            finally
-            {
-                IsLoading = false;
             }
         }
 

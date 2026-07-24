@@ -32,6 +32,7 @@ namespace RimWorldModManager
 
             Loaded += MainWindow_Loaded;
             Closed += MainWindow_Closed;
+            _viewModel.CurrentViewMode = ModViewMode.LocalMods;
         }
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -71,22 +72,9 @@ namespace RimWorldModManager
             });
         }
 
-        private void LocalModsButton_Click(object sender, RoutedEventArgs e)
+        private void ViewModeComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            _viewModel.CurrentViewMode = ModViewMode.LocalMods;
             _viewModel.SelectedModDetail = new ModDetailViewModel();
-        }
-
-        private void WorkshopModsButton_Click(object sender, RoutedEventArgs e)
-        {
-            _viewModel.CurrentViewMode = ModViewMode.WorkshopMods;
-            _viewModel.SelectedModDetail = new ModDetailViewModel();
-        }
-
-        private void ViewModeDropDown_Click(object sender, RoutedEventArgs e)
-        {
-            var button = sender as System.Windows.Controls.Button;
-            button?.ContextMenu?.IsOpen = true;
         }
 
         private async void RefreshButton_Click(object sender, RoutedEventArgs e)
