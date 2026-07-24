@@ -66,6 +66,7 @@ namespace RimWorldModManager.ViewModels
 
         public bool IsLocalModsView => CurrentViewMode == ModViewMode.LocalMods;
         public bool IsWorkshopModsView => CurrentViewMode == ModViewMode.WorkshopMods;
+        public string CurrentViewModeText => CurrentViewMode == ModViewMode.LocalMods ? "游戏 Mods" : "Workshop";
 
         public ModSortOption CurrentSortOption
         {
