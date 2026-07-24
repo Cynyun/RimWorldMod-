@@ -20,16 +20,19 @@
         <ui:TitleBar Grid.Row="0" Title="RimWorld Mod 管理器" />
 
         <DockPanel Grid.Row="1" Margin="8">
-            <ui:DropDownButton x:Name="ViewModeDropDown"
-                               Content="{Binding CurrentViewModeText}"
-                               Margin="0,0,4,0" 
-                               Padding="12,6"
-                               Width="120">
-                <ui:DropDownButton.MenuItems>
-                    <ui:MenuItem Header="游戏 Mods" Click="LocalModsButton_Click" />
-                    <ui:MenuItem Header="Workshop" Click="WorkshopModsButton_Click" />
-                </ui:DropDownButton.MenuItems>
-            </ui:DropDownButton>
+            <Button x:Name="ViewModeDropDown"
+                    Content="{Binding CurrentViewModeText}"
+                    Margin="0,0,4,0" 
+                    Padding="12,6"
+                    Width="120"
+                    Click="ViewModeDropDown_Click">
+                <Button.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="游戏 Mods" Click="LocalModsButton_Click" />
+                        <MenuItem Header="Workshop" Click="WorkshopModsButton_Click" />
+                    </ContextMenu>
+                </Button.ContextMenu>
+            </Button>
             <Separator Width="1" Background="Gray" Margin="4,0" />
             
             <ui:TextBox x:Name="WorkshopIdTextBox" 

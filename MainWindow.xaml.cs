@@ -75,17 +75,19 @@ namespace RimWorldModManager
         private void LocalModsButton_Click(object sender, RoutedEventArgs e)
         {
             _viewModel.CurrentViewMode = ModViewMode.LocalMods;
-            LocalModsToggle.IsChecked = true;
-            WorkshopModsToggle.IsChecked = false;
             _viewModel.SelectedModDetail = new ModDetailViewModel();
         }
 
         private void WorkshopModsButton_Click(object sender, RoutedEventArgs e)
         {
             _viewModel.CurrentViewMode = ModViewMode.WorkshopMods;
-            WorkshopModsToggle.IsChecked = true;
-            LocalModsToggle.IsChecked = false;
             _viewModel.SelectedModDetail = new ModDetailViewModel();
+        }
+
+        private void ViewModeDropDown_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            button?.ContextMenu?.IsOpen = true;
         }
 
         private async void RefreshButton_Click(object sender, RoutedEventArgs e)
